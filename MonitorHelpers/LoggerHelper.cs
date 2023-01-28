@@ -1,4 +1,8 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Dapper;
 using Npgsql;
 using Microsoft.Extensions.Configuration;
 
