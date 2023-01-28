@@ -21,6 +21,7 @@
     <Compile Remove="TopLevelFiles\Interfaces\IParameterChecker.cs" />
     <Compile Remove="TopLevelFiles\Interfaces\IImporter.cs" />
     <Compile Remove="TopLevelFiles\Interfaces\**" />
+    <Compile Remove="MonitorHelpers\Interfaces\ISource.cs" />
   </ItemGroup>
 
   <ItemGroup>
