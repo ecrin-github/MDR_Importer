@@ -10,9 +10,9 @@ public interface ITestingDataLayer
     IEnumerable<int> ObtainTestSourceIDs();
 
     void SetUpADCompositeTables();
-    void RetrieveSDData(ISource source);
-    void RetrieveADData(ISource source);
-    void TransferADDataToComp(ISource source);
+    void RetrieveSDData(Source source);
+    void RetrieveADData(Source source);
+    void TransferADDataToComp(Source source);
     void ApplyScriptedADChanges();
     void ConstructDiffReport();
 }

@@ -3,12 +3,12 @@ namespace MDR_Importer;
 
 class ImportBuilder
 {
-    private readonly ISource _source;
+    private readonly Source _source;
     private readonly ILoggingHelper _loggingHelper;
     private readonly ImportTableCreator _itc;
     private readonly ImportTableManager _itm;
 
-    public ImportBuilder(ISource source, ILoggingHelper loggingHelper)
+    public ImportBuilder(Source source, ILoggingHelper loggingHelper)
     {
         _source = source;
         _loggingHelper = loggingHelper;

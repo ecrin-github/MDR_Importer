@@ -6,6 +6,5 @@ namespace MDR_Importer;
 public interface IImporter
 {
     int Run(Options opts);
-
 }
 

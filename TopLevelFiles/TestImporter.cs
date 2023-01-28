@@ -39,7 +39,7 @@ public class TestImporter
 
             foreach (int sourceId in opts.SourceIds!)
             {
-                ISource? source = _monDataLayer.FetchSourceParameters(sourceId);
+                Source? source = _monDataLayer.FetchSourceParameters(sourceId);
                 if (source is not null)
                 {
                     opts.RebuildAdTables = true;
@@ -59,7 +59,7 @@ public class TestImporter
 
             foreach (int sourceId in opts.SourceIds)
             {
-                ISource? source = _monDataLayer.FetchSourceParameters(sourceId);
+                Source? source = _monDataLayer.FetchSourceParameters(sourceId);
                 if (source is not null)
                 {
                     opts.RebuildAdTables = false;
@@ -80,7 +80,7 @@ public class TestImporter
     }
     
     
-    private void ImportDataInTest(ISource source, Options opts)
+    private void ImportDataInTest(Source source, Options opts)
     {
         // Obtain source details, augment with connection string for this database.
 

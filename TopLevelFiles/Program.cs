@@ -8,15 +8,15 @@ using MDR_Importer;
 
 // Set up file based configuration environment.
 
-string AssemblyLocation = Assembly.GetExecutingAssembly().Location;
-string? BasePath = Path.GetDirectoryName(AssemblyLocation);
-if (string.IsNullOrWhiteSpace(BasePath))
+string assemblyLocation = Assembly.GetExecutingAssembly().Location;
+string? basePath = Path.GetDirectoryName(assemblyLocation);
+if (string.IsNullOrWhiteSpace(basePath))
 {
     return -1;
 }
 
 var configFiles = new ConfigurationBuilder()
-    .SetBasePath(BasePath)
+    .SetBasePath(basePath)
     .AddJsonFile("appsettings.json")
     .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true)
     .Build();
@@ -26,7 +26,7 @@ var configFiles = new ConfigurationBuilder()
 // and including Serilog
 
 IHost host = Host.CreateDefaultBuilder()
-    .UseContentRoot(BasePath)
+    .UseContentRoot(basePath)
     .ConfigureAppConfiguration(builder =>
     {
         builder.AddConfiguration(configFiles); 
@@ -38,9 +38,8 @@ IHost host = Host.CreateDefaultBuilder()
         services.AddSingleton<ICredentials, Credentials>();
         services.AddSingleton<ILoggingHelper, LoggingHelper>();
         services.AddSingleton<IMonDataLayer, MonDataLayer>();        
-        services.AddSingleton<IImporter, Importer>();
         services.AddSingleton<ITestingDataLayer, TestingDataLayer>();
-        services.AddTransient<ISource, Source>();
+        //services.AddTransient<ISource, Source>();
     })
     .Build();
 

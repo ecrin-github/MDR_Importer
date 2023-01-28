@@ -159,7 +159,7 @@ public class LoggingHelper : ILoggingHelper
     }
 
 
-    public void LogTableStatistics(ISource s, string schema)
+    public void LogTableStatistics(Source s, string schema)
     {
         // Gets and logs record count for each table in the ad schema of the database
         // Start by obtaining conection string, then construct log line for each by 
@@ -216,7 +216,7 @@ public class LoggingHelper : ILoggingHelper
     }
 
     
-    public void LogDiffs(ISource s)
+    public void LogDiffs(Source s)
     {
         string dbConn = s.db_conn!;
 

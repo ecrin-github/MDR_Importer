@@ -3,7 +3,7 @@ namespace MDR_Importer;
 
 class DataTransferrer
 {
-    private readonly ISource _source;
+    private readonly Source _source;
     private readonly ILoggingHelper _loggingHelper;
 
     private readonly ForeignTableManager _ftm;
@@ -12,7 +12,7 @@ class DataTransferrer
     private readonly StudyDataEditor _studyEditor;
     private readonly DataObjectDataEditor _objectEditor;
 
-    public DataTransferrer(ISource source, ILoggingHelper loggingHelper)
+    public DataTransferrer(Source source, ILoggingHelper loggingHelper)
     {
         _source = source;
         _loggingHelper = loggingHelper;    

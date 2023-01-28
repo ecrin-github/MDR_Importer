@@ -3,7 +3,7 @@ using System;
 
 namespace MDR_Importer;
 
-public class Importer : IImporter
+public class Importer
 {
     private readonly ILoggingHelper _loggingHelper;
     private readonly IMonDataLayer _monDataLayer;
@@ -22,7 +22,7 @@ public class Importer : IImporter
 
             foreach (int sourceId in opts.SourceIds!)
             {
-                ISource? source = _monDataLayer.FetchSourceParameters(sourceId);
+                Source? source = _monDataLayer.FetchSourceParameters(sourceId);
                 if (source is not null)
                 {
                     _loggingHelper.OpenLogFile(source.database_name!);
@@ -46,7 +46,7 @@ public class Importer : IImporter
     }
 
 
-    private void ImportData(ISource source, Options opts)
+    private void ImportData(Source source, Options opts)
     {
         // Obtain source details, augment with connection string for this database.
         // Establish top level builder classes and 

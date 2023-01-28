@@ -2,13 +2,13 @@
 
 class AdBuilder
 {
-    private readonly ISource _source;
+    private readonly Source _source;
     private readonly ILoggingHelper _loggingHelper;
 
     private readonly StudyTableBuilders _studyBuilder;
     private readonly ObjectTableBuilders _objectBuilder;
 
-    public AdBuilder(ISource source, ILoggingHelper loggingHelper)
+    public AdBuilder(Source source, ILoggingHelper loggingHelper)
     {
         _source = source;
         _loggingHelper = loggingHelper;        

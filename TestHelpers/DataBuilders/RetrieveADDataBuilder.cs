@@ -9,9 +9,9 @@ class RetrieveADDataBuilder
 
     private readonly int? _sourceId;
     private readonly string _dbConn;
-    private ISource _source;
+    private Source _source;
 
-    public RetrieveADDataBuilder(ISource source)
+    public RetrieveADDataBuilder(Source source)
     {
         _source = source;
         _sourceId = source.id;

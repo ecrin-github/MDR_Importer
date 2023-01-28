@@ -7,9 +7,9 @@ class RetrieveSDDataBuilder
 {
     private readonly int? _sourceId;
     private readonly string _dbConn;
-    private readonly ISource _source;
+    private readonly Source _source;
 
-    public RetrieveSDDataBuilder(ISource source)
+    public RetrieveSDDataBuilder(Source source)
     {
         _source = source;
         _sourceId = source.id;

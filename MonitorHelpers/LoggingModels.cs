@@ -4,7 +4,7 @@ using System;
 namespace MDR_Importer;
 
 [Table("sf.source_parameters")]
-public class Source : ISource
+public class Source 
 {
     public int? id { get; set; }
     public string? source_type { get; }

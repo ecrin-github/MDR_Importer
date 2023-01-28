@@ -389,7 +389,7 @@ class ImportTableManager
     }
 
 
-    public ImportEvent CreateImportEvent(int import_id, ISource source)
+    public ImportEvent CreateImportEvent(int import_id, Source source)
     {
         ImportEvent import = new ImportEvent(import_id, source.id);
         if (source.has_study_tables is true)

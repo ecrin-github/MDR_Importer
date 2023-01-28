@@ -54,7 +54,7 @@ public class TestingDataLayer : ITestingDataLayer
 
    
 
-    public void RetrieveSDData(ISource source)
+    public void RetrieveSDData(Source source)
     {
         RetrieveSDDataBuilder rsdb = new RetrieveSDDataBuilder(source);
         rsdb.DeleteExistingSDStudyData();
@@ -65,7 +65,7 @@ public class TestingDataLayer : ITestingDataLayer
     }
 
 
-    public void RetrieveADData(ISource source)
+    public void RetrieveADData(Source source)
     {
         RetrieveADDataBuilder radb = new RetrieveADDataBuilder(source);
         radb.DeleteExistingADStudyData();
@@ -76,7 +76,7 @@ public class TestingDataLayer : ITestingDataLayer
     }
 
 
-    public void TransferADDataToComp(ISource source)
+    public void TransferADDataToComp(Source source)
     {
         TransferADDataBuilder tdb = new TransferADDataBuilder(source);
         tdb.DeleteExistingStudyData();
