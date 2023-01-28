@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,7 +54,7 @@ TestingDataLayer testDataLayer = new(credentials, loggingHelper);
 // Establish the parameter checker, which first checks if the program's 
 // arguments can be parsed and, if they can, then checks if they are valid.
 // If both tests are passed the object returned includes both the
-// original arguments and the 'source' object or ob jects being imported.
+// original arguments and the 'source' object or objects being imported.
 
 ParameterChecker paramChecker = new(monDataLayer, testDataLayer, loggingHelper);
 ParamsCheckResult paramsCheck = paramChecker.CheckParams(args);
@@ -69,8 +67,11 @@ if (paramsCheck.ParseError || paramsCheck.ValidityError)
 }
 else
 {
-    // Should be able to proceed - (opts and srce are known to be non-null).
-    // Open log file, create Harvester class and call the main harvest function
+    // Should be able to proceed - opts and source(s) are known to be non-null.
+    // For a normal run, create an Importer class and run the import process.
+    // For a test run, create a test importer, which uses exactly the same code
+    // but which needs to establish a framework for the test data first, and then
+    // compare it with expected data afterwards.
 
     try
     {
@@ -92,7 +93,7 @@ else
         // If an error bubbles up to here there is an issue with the code.
 
         loggingHelper.LogHeader("UNHANDLED EXCEPTION");
-        loggingHelper.LogCodeError("MDR_Harvester application aborted", e.Message, e.StackTrace);
+        loggingHelper.LogCodeError("MDR_Importer application aborted", e.Message, e.StackTrace);
         loggingHelper.CloseLog();
         return -1;
     }

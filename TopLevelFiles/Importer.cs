@@ -14,7 +14,7 @@ public class Importer
         _loggingHelper = loggingHelper;
     }
     
-    public int Run(Options opts)
+    public void Run(Options opts)
     {
         try
         {
@@ -33,7 +33,6 @@ public class Importer
             }
 
             _loggingHelper.CloseLog();
-            return 0;
         }
 
         catch (Exception e)
@@ -41,7 +40,6 @@ public class Importer
             _loggingHelper.LogHeader("UNHANDLED EXCEPTION");
             _loggingHelper.LogCodeError("Importer application aborted", e.Message, e.StackTrace);
             _loggingHelper.CloseLog();
-            return -1;
         }
     }
 
