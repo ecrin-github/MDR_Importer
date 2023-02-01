@@ -85,7 +85,7 @@ public class TestImporter
         // Obtain source details, augment with connection string for this database.
 
         Credentials creds = _monDataLayer.Credentials;
-        source.db_conn = creds.GetConnectionString(source?.database_name!, true);
+        source.db_conn = creds.GetConnectionString(source.database_name!, true);
         _loggingHelper.LogStudyHeader(opts, "For source: " + source?.id! + ": " + source?.database_name!);
         _loggingHelper.LogHeader("Setup");
 

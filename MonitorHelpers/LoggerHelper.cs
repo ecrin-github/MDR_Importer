@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using Microsoft.Extensions.Configuration;
 using Dapper;
 using Npgsql;
-using Microsoft.Extensions.Configuration;
 
 namespace MDR_Importer;
 
@@ -12,11 +8,11 @@ public class LoggingHelper : ILoggingHelper
 {
     private readonly string? _logfileStartOfPath;
     private readonly string? _summaryLogfileStartOfPath;  
-    private string? _logfilePath = "";
-    private string? _summaryLogfilePath = "";
+    private string _logfilePath = "";
+    private string _summaryLogfilePath = "";
     private StreamWriter? _sw;
 
-    public LoggingHelper(string sourceName)
+    public LoggingHelper()
     {
         IConfigurationRoot settings = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
@@ -27,8 +23,7 @@ public class LoggingHelper : ILoggingHelper
         _summaryLogfileStartOfPath = settings["summaryfilepath"] ?? "";
     }
 
-
-    public string LogFilePath => _logfilePath ?? "";
+    public string LogFilePath => _logfilePath;
 
     
     public void OpenLogFile(string databaseName)
@@ -47,8 +42,8 @@ public class LoggingHelper : ILoggingHelper
         _summaryLogfilePath = Path.Combine(_summaryLogfileStartOfPath!, logFileName);
         _sw = new StreamWriter(_logfilePath, true, System.Text.Encoding.UTF8);
     }
-
     
+
     public void OpenNoSourceLogFile()
     {
         string dtString = DateTime.Now.ToString("s", System.Globalization.CultureInfo.InvariantCulture)
@@ -127,13 +122,13 @@ public class LoggingHelper : ILoggingHelper
         int[]? sourceIds = opts.SourceIds?.ToArray();
         if (sourceIds?.Length > 0)
         {
-            if (sourceIds?.Length == 1)
+            if (sourceIds.Length == 1)
             {
-                LogLine("Source_id is " + sourceIds[0].ToString());
+                LogLine("Source_id is " + sourceIds[0]);
             }
             else
             {
-                LogLine("Source_ids are " + string.Join(",", sourceIds!));
+                LogLine("Source_ids are " + string.Join(",", sourceIds));
             }
         }
 
@@ -146,23 +141,26 @@ public class LoggingHelper : ILoggingHelper
 
     public void CloseLog()
     {
-        LogHeader("Closing Log");
-        _sw!.Flush();
-        _sw!.Close();
+        if (_sw is not null)
+        {
+            LogHeader("Closing Log");
+            _sw.Flush();
+            _sw.Close();
+        }
         
         // Write out the summary file.
         
-        var swSumm = new StreamWriter(_summaryLogfilePath!, true, System.Text.Encoding.UTF8);
+        var swSummary = new StreamWriter(_summaryLogfilePath, true, System.Text.Encoding.UTF8);
         
-        swSumm.Flush();
-        swSumm.Close();
+        swSummary.Flush();
+        swSummary.Close();
     }
 
 
     public void LogTableStatistics(Source s, string schema)
     {
         // Gets and logs record count for each table in the ad schema of the database
-        // Start by obtaining conection string, then construct log line for each by 
+        // Start by obtaining connection string, then construct log line for each by 
         // calling db interrogation for each applicable table.
         
         string dbConn = s.db_conn ?? "";
@@ -244,25 +242,26 @@ public class LoggingHelper : ILoggingHelper
     
     private string GetTableRecordCount(string dbConn, string tableName)
     {
-        string sqlString = "select count(*) from sd." + tableName;
+        string tName = "sd." + tableName;
+        string sqlString = $"select count(*) from {tName}";
 
-        using (NpgsqlConnection conn = new NpgsqlConnection(dbConn))
-        {
-            int res = conn.ExecuteScalar<int>(sqlString);
-            return res.ToString() + " records found in sd." + tableName;
-        }
+        using NpgsqlConnection conn = new NpgsqlConnection(dbConn);
+        int res = conn.ExecuteScalar<int>(sqlString);
+        return res + " records found in sd." + tableName;
     }
 
     private void GetStudyStats(string dbConn, string tableType)
     {
-        string sqlString = $@"select status, count(sd_sid) as num from sd.to_ad_study_{tableType}
+        string tableName = "sd.to_ad_study_" + tableType;
+        string sqlString = $@"select status, count(sd_sid) as num from {tableName}
                            group by status order by status;";
         GetAndWriteStats(dbConn, sqlString);
     }
 
     private void GetObjectStats(string dbConn, string tableType)
     {
-        string sqlString = $@"select status, count(sd_oid) as num from sd.to_ad_object_{tableType}
+        string tableName = "sd.to_ad_object_" + tableType;
+        string sqlString = $@"select status, count(sd_oid) as num from {tableName}
                               group by status order by status;";
         GetAndWriteStats(dbConn, sqlString);
     }
@@ -270,8 +269,8 @@ public class LoggingHelper : ILoggingHelper
     private void GetAndWriteStats(string dbConn, string sqlString)
     {
         using NpgsqlConnection conn = new(dbConn);
-        List<att_stat>? statusStats = conn.Query<att_stat>(sqlString).ToList();
-        if (statusStats?.Any() is true)
+        List<att_stat> statusStats = conn.Query<att_stat>(sqlString).ToList();
+        if (statusStats.Any())
         {
             foreach (att_stat hs in statusStats)
             {
@@ -283,8 +282,8 @@ public class LoggingHelper : ILoggingHelper
 
     private string GetEntityRecDiffs(string dbConn, string entityType)
     {
-        string tableName = (entityType == "study") ? "to_ad_study_recs" : "to_ad_object_recs";
-        string sqlString = $@"select count(*) from sd.{tableName} 
+        string tableName = (entityType == "study") ? "sd.to_ad_study_recs" : "sd.to_ad_object_recs";
+        string sqlString = $@"select count(*) from {tableName} 
                               where {entityType}_rec_status = 2;";
         using NpgsqlConnection conn = new(dbConn);
         int res = conn.ExecuteScalar<int>(sqlString);
@@ -312,23 +311,8 @@ public class LoggingHelper : ILoggingHelper
     {
         string sqlString = "select count(*) from " + schema + "." + tableName;
 
-        using (NpgsqlConnection conn = new NpgsqlConnection(dbConn))
-        {
-            int res = conn.ExecuteScalar<int>(sqlString);
-            return res.ToString() + " records found in " + schema + "." + tableName;
-        }
+        using NpgsqlConnection conn = new NpgsqlConnection(dbConn);
+        int res = conn.ExecuteScalar<int>(sqlString);
+        return res.ToString() + " records found in " + schema + "." + tableName;
     }
-
-/*
-    public IEnumerable<hash_stat> GetHashStats(string db_conn, string schema, string table_name)
-    {
-        string sql_string = "select hash_type_id, hash_type, count(id) as num from " + schema + "." + table_name;
-        sql_string += " group by hash_type_id, hash_type order by hash_type_id;";
-
-        using (NpgsqlConnection conn = new NpgsqlConnection(db_conn))
-        {
-            return conn.Query<hash_stat>(sql_string);
-        }
-    }
-    */
 }

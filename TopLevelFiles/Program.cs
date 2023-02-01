@@ -21,7 +21,6 @@ var configFiles = new ConfigurationBuilder()
 
 // Set up the host for the app,
 // adding the services used in the system to support DI
-// and including Serilog
 
 IHost host = Host.CreateDefaultBuilder()
     .UseContentRoot(basePath)
@@ -30,14 +29,12 @@ IHost host = Host.CreateDefaultBuilder()
         builder.AddConfiguration(configFiles); 
         
     })
-    .ConfigureServices((hostContext, services) =>
+    .ConfigureServices(services =>
     {
-        // Register services (or develop a comp root)
         services.AddSingleton<ICredentials, Credentials>();
         services.AddSingleton<ILoggingHelper, LoggingHelper>();
         services.AddSingleton<IMonDataLayer, MonDataLayer>();        
         services.AddSingleton<ITestingDataLayer, TestingDataLayer>();
-        //services.AddTransient<ISource, Source>();
     })
     .Build();
 
@@ -91,6 +88,7 @@ else
     catch (Exception e)
     {
         // If an error bubbles up to here there is an issue with the code.
+        // Any logger at this stage will be connected to a sink file.
 
         loggingHelper.LogHeader("UNHANDLED EXCEPTION");
         loggingHelper.LogCodeError("MDR_Importer application aborted", e.Message, e.StackTrace);
