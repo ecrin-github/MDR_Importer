@@ -87,8 +87,8 @@ else
     }
     catch (Exception e)
     {
-        // If an error bubbles up to here there is an issue with the code.
-        // Any logger at this stage will be connected to a sink file.
+        // If an error bubbles up to here there is an unexpected issue with the code.
+        // A file should normally have been created (but just in case...).
 
         loggingHelper.LogHeader("UNHANDLED EXCEPTION");
         loggingHelper.LogCodeError("MDR_Importer application aborted", e.Message, e.StackTrace);

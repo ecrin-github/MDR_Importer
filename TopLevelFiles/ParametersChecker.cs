@@ -69,7 +69,7 @@ internal class ParameterChecker
                 {
                     if (!_monDataLayer.SourceIdPresent(sourceId))
                     {
-                        throw new ArgumentException("Source argument " + sourceId.ToString() +
+                        throw new ArgumentException("Source argument " + sourceId +
                                                     " does not correspond to a known source");
                     }
                 }

@@ -7,6 +7,7 @@ namespace MDR_Importer;
 public interface IMonDataLayer
 {
     Credentials Credentials { get; }
+    string GetConnectionString(string database_name, bool using_test_data);
 
     bool SourceIdPresent(int? source_id);
     Source? FetchSourceParameters(int? source_id);

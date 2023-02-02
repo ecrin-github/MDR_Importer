@@ -20,16 +20,7 @@
   <ItemGroup>
     <Compile Remove="TopLevelFiles\Interfaces\IParameterChecker.cs" />
     <Compile Remove="TopLevelFiles\Interfaces\IImporter.cs" />
-    <Compile Remove="TopLevelFiles\Interfaces\**" />
     <Compile Remove="MonitorHelpers\Interfaces\ISource.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="TopLevelFiles\Interfaces\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="TopLevelFiles\Interfaces\**" />
   </ItemGroup>
 
 </Project>

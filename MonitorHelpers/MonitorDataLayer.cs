@@ -9,7 +9,7 @@ namespace MDR_Importer;
 
 public class MonDataLayer : IMonDataLayer
 {
-    private readonly ICredentials? _credentials;
+    private readonly ICredentials _credentials;
     private readonly string? _sqlFileSelectString;
     private readonly string? _connString;
     private readonly ILoggingHelper _loggingHelper;
@@ -32,7 +32,10 @@ public class MonDataLayer : IMonDataLayer
         _sqlFileSelectString += " last_harvest_id, last_harvested, last_import_id, last_imported ";
     }
 
-    public Credentials Credentials => (Credentials)_credentials!;
+    public Credentials Credentials => (Credentials)_credentials;
+
+    public string GetConnectionString(string database_name, bool using_test_data) =>
+                                     _credentials.GetConnectionString(database_name, using_test_data);
            
     public bool SourceIdPresent(int? sourceId)
     {

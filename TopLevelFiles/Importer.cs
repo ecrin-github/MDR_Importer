@@ -1,7 +1,4 @@
-﻿
-using System;
-
-namespace MDR_Importer;
+﻿namespace MDR_Importer;
 
 public class Importer
 {
@@ -22,14 +19,23 @@ public class Importer
 
             foreach (int sourceId in opts.SourceIds!)
             {
-                Source? source = _monDataLayer.FetchSourceParameters(sourceId);
-                if (source is not null)
-                {
-                    _loggingHelper.OpenLogFile(source.database_name!);
-                    _loggingHelper.LogHeader("STARTING IMPORTER");
-                    _loggingHelper.LogCommandLineParameters(opts);
-                    ImportData(source, opts);
-                }
+                // Obtain source details, augment with connection string for this database
+                // Open up the logging file for this source and then call the main 
+                // import routine. After initial checks source is guaranteed to be non-null.
+                    
+                Source source = _monDataLayer.FetchSourceParameters(sourceId)!;
+                string dbName = source.database_name!;
+                source.db_conn = _monDataLayer.GetConnectionString(dbName, false);
+                
+                _loggingHelper.OpenLogFile(source.database_name!);
+                _loggingHelper.LogHeader("STARTING IMPORTER");
+                _loggingHelper.LogCommandLineParameters(opts);
+                _loggingHelper.LogStudyHeader(opts, "For source: " + source.id + ": " + dbName);
+                
+                ImportData(source, opts);
+                
+                //_loggingHelper.LogImportSummary(source);
+                _loggingHelper.CloseLog();
             }
 
             _loggingHelper.CloseLog();
@@ -43,22 +49,17 @@ public class Importer
         }
     }
 
-
     private void ImportData(Source source, Options opts)
     {
         // Obtain source details, augment with connection string for this database.
         // Establish top level builder classes and 
         // Set up sf monitor tables as foreign tables, temporarily.
         // Recreate ad tables if necessary.
-        
-        Credentials creds = _monDataLayer.Credentials;
-        source.db_conn = creds.GetConnectionString(source.database_name!, false);
-        _loggingHelper.LogStudyHeader(opts, "For source: " + source.id + ": " + source.database_name!);
+
         _loggingHelper.LogHeader("Setup");
-       
         ImportBuilder ib = new ImportBuilder(source, _loggingHelper);
         DataTransferrer dataTransferrer = new DataTransferrer(source, _loggingHelper);
-        dataTransferrer.EstablishForeignMonTables(creds);
+        dataTransferrer.EstablishForeignMonTables(_monDataLayer.Credentials);
         _loggingHelper.LogLine("Foreign (mon) tables established in database");
         if (opts.RebuildAdTables is true)
         {
