@@ -50,7 +50,7 @@ public class ADCompObjectTableCreator
           , add_study_contribs     BOOLEAN         NULL
           , add_study_topics       BOOLEAN         NULL
           , datetime_of_data_fetch TIMESTAMPTZ     NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
           , object_full_hash       CHAR(32)        NULL
         );
         CREATE INDEX data_objects_sd_oid ON adcomp.data_objects(sd_oid);
@@ -83,7 +83,7 @@ public class ADCompObjectTableCreator
           , consent_genetic_only   BOOLEAN         NULL
           , consent_no_methods     BOOLEAN         NULL
           , consent_details        VARCHAR         NULL 
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_datasets_sd_oid ON adcomp.object_datasets(sd_oid);";
 
@@ -108,7 +108,7 @@ public class ADCompObjectTableCreator
           , end_month              INT             NULL
           , end_day                INT             NULL
           , details                VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_dates_sd_oid ON adcomp.object_dates(sd_oid);";
 
@@ -133,7 +133,7 @@ public class ADCompObjectTableCreator
           , resource_size          VARCHAR         NULL
           , resource_size_units    VARCHAR         NULL
           , resource_comments      VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_instances_sd_oid ON adcomp.object_instances(sd_oid);";
 
@@ -159,7 +159,7 @@ public class ADCompObjectTableCreator
           , organisation_id        INT             NULL
           , organisation_name      VARCHAR         NULL
           , organisation_ror_id    VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_contributors_sd_oid ON adcomp.object_contributors(sd_oid);";
 
@@ -180,7 +180,7 @@ public class ADCompObjectTableCreator
           , lang_usage_id          INT             NOT NULL default 11
           , is_default             BOOLEAN         NULL
           , comments               VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_titles_sd_oid ON adcomp.object_titles(sd_oid);";
 
@@ -202,7 +202,7 @@ public class ADCompObjectTableCreator
           , original_ct_id         INT             NULL
           , original_ct_code       VARCHAR         NULL
           , original_value         VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_topics_sd_oid ON adcomp.object_topics(sd_oid);";
 
@@ -222,7 +222,7 @@ public class ADCompObjectTableCreator
           , pmid                   VARCHAR         NULL 
           , pmid_version           VARCHAR         NULL 
           , notes                  VARCHAR         NULL 
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_comments_sd_oid ON adcomp.object_comments(sd_oid);";
 
@@ -241,7 +241,7 @@ public class ADCompObjectTableCreator
           , label                  VARCHAR         NULL
           , description_text       VARCHAR         NULL
           , lang_code              VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_descriptions_sd_oid ON adcomp.object_descriptions(sd_oid);";
 
@@ -262,7 +262,7 @@ public class ADCompObjectTableCreator
           , identifier_org         VARCHAR         NULL
           , identifier_org_ror_id  VARCHAR         NULL
           , identifier_date        VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_identifiers_sd_oid ON adcomp.object_identifiers(sd_oid);";
 
@@ -280,7 +280,7 @@ public class ADCompObjectTableCreator
           , db_sequence            INT             NULL
           , db_name                VARCHAR         NULL
           , id_in_db               VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_db_links_sd_oid ON adcomp.object_db_links(sd_oid);";
 
@@ -296,7 +296,7 @@ public class ADCompObjectTableCreator
           , source_id              INT             NOT NULL
           , sd_oid                 VARCHAR         NULL
           , type_name              VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_publication_types_sd_oid ON adcomp.object_publication_types(sd_oid);";
 
@@ -315,7 +315,7 @@ public class ADCompObjectTableCreator
           , target_sd_oid          VARCHAR        NULL
           , targetsd_sid           VARCHAR         NULL
           , targetseq_num          INT             NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_relationships_sd_oid ON adcomp.object_relationships(sd_oid);";
 
@@ -333,7 +333,7 @@ public class ADCompObjectTableCreator
           , rights_name            VARCHAR         NULL
           , rights_uri             VARCHAR         NULL
           , comments               VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX object_rights_sd_oid ON adcomp.object_rights(sd_oid);";
 

@@ -51,13 +51,9 @@ public class ImportEvent
     public DateTime? time_started { get; set; }
     public DateTime? time_ended { get; set; }
     public int? num_new_studies { get; set; }
-    public int? num_edited_studies { get; set; }
-    public int? num_unchanged_studies { get; set; }
-    public int? num_deleted_studies { get; set; }
+    public int? num_matched_studies { get; set; }
     public int? num_new_objects { get; set; }
-    public int? num_edited_objects { get; set; }
-    public int? num_unchanged_objects { get; set; }
-    public int? num_deleted_objects { get; set; }
+    public int? num_matched_objects { get; set; }
     public string? comments { get; set; }
 
     public ImportEvent(int? _id, int? _source_id)
@@ -75,25 +71,17 @@ public class HistoryRecord
     public int? id { get; set; }
     public int? num_new_studies { get; set; }
     public int? num_edited_studies { get; set; }
-    public int? num_unchanged_studies { get; set; }
-    public int? num_deleted_studies { get; set; }
     public int? num_new_objects { get; set; }
     public int? num_edited_objects { get; set; }
-    public int? num_unchanged_objects { get; set; }
-    public int? num_deleted_objects { get; set; }
     public DateTime? time_created { get; set; }
 
     public HistoryRecord(ImportEvent imp)
     {
         id = imp.id;
         num_new_studies = imp.num_new_studies;
-        num_edited_studies = imp.num_edited_studies;
-        num_unchanged_studies = imp.num_unchanged_studies;
-        num_deleted_studies = imp.num_deleted_studies;
+        num_edited_studies = imp.num_matched_studies;
         num_new_objects = imp.num_new_objects;
-        num_edited_objects = imp.num_edited_objects;
-        num_unchanged_objects = imp.num_unchanged_objects;
-        num_deleted_objects = imp.num_deleted_objects;
+        num_edited_objects = imp.num_matched_objects;
         time_created = DateTime.Now;
     }
 }
@@ -207,12 +195,3 @@ public class att_stat
     public int? status { get; set; }
     public int? num { get; set; }
 }
-
-/*
-public class hash_stat
-{
-    public int hash_type_id { get; set; }
-    public string hash_type { get; set; }
-    public int num { get; set; }
-}
-*/

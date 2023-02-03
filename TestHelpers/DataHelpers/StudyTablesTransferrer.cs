@@ -49,11 +49,11 @@ class StudyTablesTransferrer
         string sql_string = @"INSERT INTO adcomp.study_identifiers(source_id, sd_sid,
         identifier_value, identifier_type_id, 
         identifier_org_id, identifier_org, identifier_org_ror_id, 
-        identifier_date, identifier_link, record_hash)
+        identifier_date, identifier_link)
         SELECT " + _source_id + @", sd_sid,
         identifier_value, identifier_type_id, 
         identifier_org_id, identifier_org, identifier_org_ror_id, 
-        identifier_date, identifier_link, record_hash
+        identifier_date, identifier_link
         FROM ad.study_identifiers";
 
         Execute_SQL(sql_string);
@@ -64,9 +64,9 @@ class StudyTablesTransferrer
     {
 
         string sql_string = @"INSERT INTO adcomp.study_relationships(source_id, sd_sid,
-        relationship_type_id, target_sd_sid, record_hash)
+        relationship_type_id, target_sd_sid)
         SELECT " + _source_id + @", sd_sid,
-        relationship_type_id, target_sd_sid, record_hash
+        relationship_type_id, target_sd_sid
         FROM ad.study_relationships";
 
         Execute_SQL(sql_string);
@@ -77,9 +77,9 @@ class StudyTablesTransferrer
     {
 
         string sql_string = @"INSERT INTO adcomp.study_references(source_id, sd_sid,
-        pmid, citation, doi, comments, record_hash)
+        pmid, citation, doi, comments)
         SELECT " + _source_id + @", sd_sid,
-        pmid, citation, doi, comments, record_hash
+        pmid, citation, doi, comments
         FROM ad.study_references";
 
         Execute_SQL(sql_string);
@@ -91,10 +91,10 @@ class StudyTablesTransferrer
 
         string sql_string = @"INSERT INTO adcomp.study_titles(source_id, sd_sid,
         title_type_id, title_text, lang_code, lang_usage_id,
-        is_default, comments, record_hash)
+        is_default, comments)
         SELECT " + _source_id + @", sd_sid,
         title_type_id, title_text, lang_code, lang_usage_id,
-        is_default, comments, record_hash
+        is_default, comments
         FROM ad.study_titles";
 
         Execute_SQL(sql_string);
@@ -107,12 +107,12 @@ class StudyTablesTransferrer
         contrib_type_id, is_individual, 
         person_id, person_given_name, person_family_name, person_full_name,
         orcid_id, person_affiliation, organisation_id, 
-        organisation_name, organisation_ror_id, record_hash)
+        organisation_name, organisation_ror_id)
         SELECT " + _source_id + @", sd_sid,
         contrib_type_id, is_individual, 
         person_id, person_given_name, person_family_name, person_full_name,
         orcid_id, person_affiliation, organisation_id, 
-        organisation_name, organisation_ror_id, record_hash
+        organisation_name, organisation_ror_id
         FROM ad.study_contributors";
 
         Execute_SQL(sql_string);
@@ -124,11 +124,11 @@ class StudyTablesTransferrer
         string sql_string = @"INSERT INTO adcomp.study_topics(source_id, sd_sid,
         topic_type_id, mesh_coded, mesh_code, mesh_value, 
         original_ct_id, original_ct_code,
-        original_value, record_hash)
+        original_value)
         SELECT " + _source_id + @", sd_sid,
         topic_type_id, mesh_coded, mesh_code, mesh_value, 
         original_ct_id, original_ct_code,
-        original_value, record_hash
+        original_value
         FROM ad.study_topics";
 
         Execute_SQL(sql_string);
@@ -138,9 +138,9 @@ class StudyTablesTransferrer
     public void TransferStudyFeatures()
     {
         string sql_string = @"INSERT INTO adcomp.study_features(source_id, sd_sid,
-        feature_type_id, feature_value_id, record_hash)
+        feature_type_id, feature_value_id)
         SELECT " + _source_id + @", sd_sid,
-        feature_type_id, feature_value_id, record_hash
+        feature_type_id, feature_value_id
         FROM ad.study_features";
 
         Execute_SQL(sql_string);
@@ -151,9 +151,9 @@ class StudyTablesTransferrer
     {
 
         string sql_string = @"INSERT INTO adcomp.study_links(source_id, sd_sid,
-        link_label, link_url, record_hash)
+        link_label, link_url)
         SELECT " + _source_id + @", sd_sid,
-        link_label, link_url, record_hash
+        link_label, link_url
         FROM ad.study_links";
 
         Execute_SQL(sql_string);
@@ -164,9 +164,9 @@ class StudyTablesTransferrer
     {
 
         string sql_string = @"INSERT INTO adcomp.study_countries(source_id, sd_sid,
-        country_id, country_name, status_id, record_hash)
+        country_id, country_name, status_id)
         SELECT " + _source_id + @", sd_sid,
-        country_id, country_name, status_id, record_hash
+        country_id, country_name, status_id
         FROM ad.study_countries";
 
         Execute_SQL(sql_string);
@@ -178,10 +178,10 @@ class StudyTablesTransferrer
 
         string sql_string = @"INSERT INTO adcomp.study_locations(source_id, sd_sid,
         facility_org_id, facility, facility_ror_id, 
-        city_id, city_name, country_id, country_name, status_id, record_hash)
+        city_id, city_name, country_id, country_name, status_id)
         SELECT " + _source_id + @", sd_sid,
         facility_org_id, facility, facility_ror_id, 
-        city_id, city_name, country_id, country_name, status_id, record_hash
+        city_id, city_name, country_id, country_name, status_id
         FROM ad.study_locations";
 
         Execute_SQL(sql_string);
@@ -191,9 +191,9 @@ class StudyTablesTransferrer
     public void TransferStudyIPDAvaiable()
     {
         string sql_string = @"INSERT INTO adcomp.study_ipd_available(source_id, sd_sid,
-        ipd_id, ipd_type, ipd_url, ipd_comment, record_hash)
+        ipd_id, ipd_type, ipd_url, ipd_comment)
         SELECT " + _source_id + @", sd_sid,
-        ipd_id, ipd_type, ipd_url, ipd_comment, record_hash
+        ipd_id, ipd_type, ipd_url, ipd_comment
         FROM ad.study_ipd_available";
 
         Execute_SQL(sql_string);

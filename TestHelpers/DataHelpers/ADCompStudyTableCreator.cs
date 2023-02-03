@@ -46,7 +46,7 @@ public class ADCompStudyTableCreator
             , max_age                INT             NULL
             , max_age_units_id       INT             NULL
             , datetime_of_data_fetch TIMESTAMPTZ     NULL
-            , record_hash            CHAR(32)        NULL
+                        CHAR(32)        NULL
             , study_full_hash        CHAR(32)        NULL
         );
         CREATE INDEX studies_sid ON adcomp.studies(sd_sid);";
@@ -69,7 +69,7 @@ public class ADCompStudyTableCreator
           , identifier_org_ror_id  VARCHAR         NULL
           , identifier_date        VARCHAR         NULL
           , identifier_link        VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_identifiers_sd_sid ON adcomp.study_identifiers(sd_sid);";
 
@@ -86,7 +86,7 @@ public class ADCompStudyTableCreator
           , sd_sid                 VARCHAR         NOT NULL
           , relationship_type_id   INT             NULL
           , target_sd_sid          VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_relationships_sd_sid ON adcomp.study_relationships(sd_sid);
         CREATE INDEX study_relationships_target_sd_sid ON adcomp.study_relationships(target_sd_sid);";
@@ -106,7 +106,7 @@ public class ADCompStudyTableCreator
           , citation               VARCHAR         NULL
           , doi                    VARCHAR         NULL	
           , comments               VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_references_sd_sid ON adcomp.study_references(sd_sid);";
 
@@ -127,7 +127,7 @@ public class ADCompStudyTableCreator
           , lang_usage_id          INT             NOT NULL default 11
           , is_default             BOOLEAN         NULL
           , comments               VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_titles_sd_sid ON adcomp.study_titles(sd_sid);";
 
@@ -153,7 +153,7 @@ public class ADCompStudyTableCreator
           , organisation_id        INT             NULL
           , organisation_name      VARCHAR         NULL
           , organisation_ror_id    VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_contributors_sd_sid ON adcomp.study_contributors(sd_sid);";
 
@@ -175,7 +175,7 @@ public class ADCompStudyTableCreator
           , original_ct_id         INT             NULL
           , original_ct_code       VARCHAR         NULL
           , original_value         VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_topics_sd_sid ON adcomp.study_topics(sd_sid);";
 
@@ -192,7 +192,7 @@ public class ADCompStudyTableCreator
           , sd_sid                 VARCHAR         NOT NULL
           , feature_type_id        INT             NULL
           , feature_value_id       INT             NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_features_sd_sid ON adcomp.study_features(sd_sid);";
 
@@ -209,7 +209,7 @@ public class ADCompStudyTableCreator
           , sd_sid                 VARCHAR         NOT NULL
           , link_label             VARCHAR         NULL
           , link_url               VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_links_sd_sid ON adcomp.study_links(sd_sid);";
 
@@ -232,7 +232,7 @@ public class ADCompStudyTableCreator
           , country_id             INT             NULL
           , country_name           VARCHAR         NULL
           , status_id              INT             NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_locations_sd_sid ON ad.study_locations(sd_sid);";
 
@@ -250,7 +250,7 @@ public class ADCompStudyTableCreator
           , country_id             INT             NULL
           , country_name           VARCHAR         NULL
           , status_id              INT             NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_countries_sd_sid ON ad.study_countries(sd_sid);";
 
@@ -268,7 +268,7 @@ public class ADCompStudyTableCreator
           , ipd_type               VARCHAR         NULL
           , ipd_url                VARCHAR         NULL
           , ipd_comment            VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
+                      CHAR(32)        NULL
         );
         CREATE INDEX study_ipd_available_sd_sid ON adcomp.study_ipd_available(sd_sid);";
 

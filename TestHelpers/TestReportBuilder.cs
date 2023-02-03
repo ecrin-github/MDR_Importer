@@ -9,6 +9,10 @@ namespace MDR_Importer;
 
 class TestReportBuilder
 {
+    // ***********************************************************************
+    // will need to be rewritten in many parts because of the loss of hashes 
+    // ***********************************************************************
+    
     private readonly string _dbConn;
     private string? _sqlString;
     private int _totalStudies;
@@ -130,7 +134,7 @@ class TestReportBuilder
         CompareAttributeNumbers("studies", "study_relationships");
     }
 
-
+/*
     public void CompareStudyHashes()
     {
         CompareHashes("studies", "study_identifiers", 11);
@@ -145,7 +149,7 @@ class TestReportBuilder
         CompareHashes("studies", "study_locations", 20);
         CompareHashes("studies", "study_relartionships", 16);
     }
-
+*/
 
     public bool CompareObjectRecordCounts()
     {
@@ -230,7 +234,7 @@ class TestReportBuilder
         CompareAttributeNumbers("data_objects", "object_identifiers");
     }
 
-
+/*
     public void CompareObjectHashes()
     {
         CompareHashes("data_objects", "object_datasets", 50);
@@ -247,6 +251,7 @@ class TestReportBuilder
         CompareHashes("data_objects", "object_publication_types", 62);
         CompareHashes("data_objects", "object_identifiers", 63);
     }
+*/
 
     public void CompareFullHashes()
     {
@@ -656,7 +661,7 @@ class TestReportBuilder
         WriteOutAttributesOnlyInOneDataset(_sqlString, main_table);
     }
 
-
+/*
     private void CompareHashes(string main_table, string table, int hashtype)
     {
         DoHashComparisonHeader(table);
@@ -901,7 +906,7 @@ class TestReportBuilder
 
         WriteOutHashesOnlyInOneDataset(_sqlString, main_table);
     }
-
+*/
 
     public void Close()
     {

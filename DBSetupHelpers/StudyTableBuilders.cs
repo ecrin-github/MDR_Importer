@@ -223,6 +223,7 @@ public class StudyTableBuilders
           , feature_type_id        INT             NULL
           , feature_value_id       INT             NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
+
         );
         CREATE INDEX study_features_sid ON ad.study_features(sd_sid);";
 
@@ -238,7 +239,6 @@ public class StudyTableBuilders
           , sd_sid                 VARCHAR         NOT NULL
           , link_label             VARCHAR         NULL
           , link_url               VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
         CREATE INDEX study_links_sd_sid ON ad.study_links(sd_sid);";
@@ -261,8 +261,8 @@ public class StudyTableBuilders
           , country_id             INT             NULL
           , country_name           VARCHAR         NULL
           , status_id              INT             NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
+          , coded_on               TIMESTAMPTZ     NULL          
         );
         CREATE INDEX study_locations_sd_sid ON ad.study_locations(sd_sid);";
 
@@ -279,8 +279,8 @@ public class StudyTableBuilders
           , country_id             INT             NULL
           , country_name           VARCHAR         NULL
           , status_id              INT             NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
+          , coded_on               TIMESTAMPTZ     NULL                                         
         );
         CREATE INDEX study_countries_sd_sid ON ad.study_countries(sd_sid);";
 
@@ -298,28 +298,60 @@ public class StudyTableBuilders
           , ipd_type               VARCHAR         NULL
           , ipd_url                VARCHAR         NULL
           , ipd_comment            VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
         CREATE INDEX study_ipd_available_sd_sid ON ad.study_ipd_available(sd_sid);";
 
         Execute_SQL(sql_string);
     }
-
-
-    public void create_table_study_hashes()
+    
+    private void create_iec_table(string table_name)
     {
-        string sql_string = @"DROP TABLE IF EXISTS ad.study_hashes;
-        CREATE TABLE ad.study_hashes(
+        string sql_string = $@"DROP TABLE IF EXISTS ad.{table_name};
+        CREATE TABLE ad.{table_name}(
             id                     INT             GENERATED ALWAYS AS IDENTITY PRIMARY KEY
           , sd_sid                 VARCHAR         NOT NULL
-          , hash_type_id           INT             NULL
-          , composite_hash         CHAR(32)        NULL
+          , seq_num                INT             NULL
+          , leader                 VARCHAR         NOT NULL
+          , indent_level           INT             NULL
+          , level_seq_num          INT             NULL
+          , iec_type_id            INT             NULL
+          , iec_text               VARCHAR         NULL
+          , iec_class_id           INT             NULL
+          , iec_class              VARCHAR         NULL
+          , iec_parsed_text        VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
+          , coded_on               TIMESTAMPTZ     NULL                                                      
         );
-        CREATE INDEX study_hashes_sd_sid ON ad.study_hashes(sd_sid);
-        CREATE INDEX study_hashes_composite_hash ON ad.study_hashes(composite_hash);";
+        CREATE INDEX {table_name}_sid ON ad.{table_name}(sd_sid);";
 
         Execute_SQL(sql_string);
     }
+
+    public void create_table_study_iec()
+    {
+        create_iec_table("study_iec");
+    }
+    
+    public void create_table_study_iec_by_year_groups()
+    {
+        create_iec_table("study_iec_pre12");
+        create_iec_table("study_iec_13to19");
+        create_iec_table("study_iec_20on");
+    }
+
+    public void create_table_study_iec_by_years()
+    {
+        create_iec_table("study_iec_null");
+        create_iec_table("study_iec_pre06");
+        create_iec_table("study_iec_0608");
+        create_iec_table("study_iec_0910");
+        create_iec_table("study_iec_1112");
+        create_iec_table("study_iec_1314");
+        for (int i = 15; i < 30; i++)
+        {
+            create_iec_table($"study_iec_{i}");
+        }
+    }
+    
 }

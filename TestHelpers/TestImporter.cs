@@ -142,22 +142,24 @@ public class TestImporter
         }
         transferrer.AddNewDataObjects(importId);
 
+        /*
         _loggingHelper.LogHeader("Editing existing data where necessary");
         if (source!.has_study_tables is true)
-        {
+        { 
             transferrer.UpdateEditedStudyData(importId);
         }
         transferrer.UpdateEditedDataObjectData(importId);
-
+        */
+        
         _loggingHelper.LogHeader("Updating dates of data");
         transferrer.UpdateDatesOfData();   
         
         _loggingHelper.LogHeader("Deleting data no longer present in source");
         if (source!.has_study_tables is true)
         {
-            transferrer.RemoveDeletedStudyData(importId);
+            transferrer.RemoveMatchedStudyData(importId);
         }
-        transferrer.RemoveDeletedDataObjectData(importId);
+        transferrer.RemoveMatchedDataObjectData(importId);
         
         // Copy ad data from ad tables to the compad tables...
         // Tidy up by removing monitoring tables

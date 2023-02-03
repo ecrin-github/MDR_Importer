@@ -30,13 +30,16 @@ class TransferADDataBuilder
 
             if (_source.has_study_topics is true) DeleteData(_sourceId, "study_topics");
             if (_source.has_study_features is true) DeleteData(_sourceId, "study_features");
-            if (_source.has_study_contributors is true) DeleteData(_sourceId, "study_contributors");
+            if (_source.has_study_people is true) DeleteData(_sourceId, "study_people");
+            if (_source.has_study_organisations is true) DeleteData(_sourceId, "study_organisations");
             if (_source.has_study_references is true) DeleteData(_sourceId, "study_references");
             if (_source.has_study_relationships is true) DeleteData(_sourceId, "study_relationships");
             if (_source.has_study_links is true) DeleteData(_sourceId, "study_links");
-            if (_source.has_study_countries is true) DeleteData(_sourceId, "study_countgries");
+            if (_source.has_study_countries is true) DeleteData(_sourceId, "study_countries");
             if (_source.has_study_locations is true) DeleteData(_sourceId, "study_locations");
             if (_source.has_study_ipd_available is true) DeleteData(_sourceId, "study_ipd_available");
+            
+            //iec, conditions to add
         }
     }
 
@@ -58,7 +61,8 @@ class TransferADDataBuilder
             if (_source.has_object_rights is true) DeleteData(_sourceId, "object_rights");
             if (_source.has_object_pubmed_set is true)
             {
-                DeleteData(_sourceId, "object_contributors");
+                DeleteData(_sourceId, "object_people");
+                DeleteData(_sourceId, "object_organisations");
                 DeleteData(_sourceId, "object_topics");
                 DeleteData(_sourceId, "object_comments");
                 DeleteData(_sourceId, "object_descriptions");
@@ -85,7 +89,7 @@ class TransferADDataBuilder
 
             if (_source.has_study_topics is true) stt.TransferStudyTopics();
             if (_source.has_study_features is true) stt.TransferStudyFeatures();
-            if (_source.has_study_contributors is true) stt.TransferStudyContributors();
+            // if (_source.has_study_contributors is true) stt.TransferStudyContributors();
             if (_source.has_study_references is true) stt.TransferStudyReferences();
             if (_source.has_study_relationships is true) stt.TransferStudyRelationships();
             if (_source.has_study_links is true) stt.TransferStudyLinks();

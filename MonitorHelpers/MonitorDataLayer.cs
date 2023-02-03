@@ -179,16 +179,14 @@ public class MonDataLayer : IMonDataLayer
 
     public bool CheckIfFullHarvest(int? sourceId)
     {
-        string sqlString = @"select type_id from sf.harvest_events
-                     where source_id = " + sourceId.ToString() + @"
-                     and time_ended = (
-                           select max(time_ended) from sf.harvest_events 
-                           where source_id = " + sourceId.ToString() + @"
-                     )";
+        string sqlString = $@"select type_id from sf.harvest_events
+                     where source_id = {sourceId} and time_ended = 
+                          (select max(time_ended) from sf.harvest_events 
+                           where source_id = {sourceId})";
 
         using NpgsqlConnection conn = new(_connString);
         int res = conn.ExecuteScalar<int>(sqlString);
-        return (res == 1);
+        return (res == 1);   // harvest type 1 = all records
     }
     
     

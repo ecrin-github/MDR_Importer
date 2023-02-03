@@ -29,7 +29,6 @@ class AdBuilder
             _studyBuilder.create_table_studies();
             _studyBuilder.create_table_study_identifiers();
             _studyBuilder.create_table_study_titles();
-            _studyBuilder.create_table_study_hashes();
 
             // these are database dependent
             if (_source.has_study_topics is true) _studyBuilder.create_table_study_topics();
@@ -47,15 +46,15 @@ class AdBuilder
             {
                 if (_source.study_iec_storage_type == "Single Table")
                 {
-                    study_table_builder.create_table_study_iec();
+                    _studyBuilder.create_table_study_iec();
                 }
                 if (_source.study_iec_storage_type == "By Year Groupings")
                 {
-                    study_table_builder.create_table_study_iec_by_year_groups();
+                    _studyBuilder.create_table_study_iec_by_year_groups();
                 }
                 if (_source.study_iec_storage_type == "By Years")
                 {
-                    study_table_builder.create_table_study_iec_by_years();
+                    _studyBuilder.create_table_study_iec_by_years();
                 }
             }
             _loggingHelper.LogLine("Rebuilt AD study tables");
@@ -83,6 +82,7 @@ class AdBuilder
             _objectBuilder.create_table_object_identifiers();
             _objectBuilder.create_table_object_db_links();
             _objectBuilder.create_table_object_publication_types();
+            _objectBuilder.create_table_journal_details();
         }
 
         _loggingHelper.LogLine("Rebuilt AD object tables");

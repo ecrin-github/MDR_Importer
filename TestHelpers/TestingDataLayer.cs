@@ -112,14 +112,14 @@ public class TestingDataLayer : ITestingDataLayer
         {
             tdb.CompareStudyRecords();
             tdb.CompareStudyAttributes();
-            tdb.CompareStudyHashes();
+           // tdb.CompareStudyHashes();
         }
 
         if (tdb.CompareObjectRecordCounts())
         {
             tdb.CompareObjectRecords();
             tdb.CompareObjectAttributes();
-            tdb.CompareObjectHashes();
+          //  tdb.CompareObjectHashes();
         }
 
         tdb.CompareFullHashes();

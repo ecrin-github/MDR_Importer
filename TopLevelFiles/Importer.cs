@@ -57,63 +57,52 @@ public class Importer
         // Recreate ad tables if necessary.
 
         _loggingHelper.LogHeader("Setup");
-        ImportBuilder ib = new ImportBuilder(source, _loggingHelper);
-        DataTransferrer dataTransferrer = new DataTransferrer(source, _loggingHelper);
-        dataTransferrer.EstablishForeignMonTables(_monDataLayer.Credentials);
-        _loggingHelper.LogLine("Foreign (mon) tables established in database");
         if (opts.RebuildAdTables is true)
         {
             AdBuilder adb = new AdBuilder(source, _loggingHelper);
             adb.BuildNewAdTables();
         }
         
-        // Create and fill temporary tables to hold ids and edit statuses  
-        // of new, edited, deleted studies and data objects.
+        // Create import event log record.
+        // Create and fill temporary tables to hold ids and statuses  
+        // of new or matched sd studies and sd data objects.
 
         _loggingHelper.LogHeader("Start Import Process");
-        _loggingHelper.LogHeader("Create and fill diff tables");
-        ib.CreateImportTables();
-        bool countDeleted = _monDataLayer.CheckIfFullHarvest(source.id);
-        ib.FillImportTables(countDeleted);
+        _loggingHelper.LogHeader("Create and fill status tables");
+ 
+        ImportTableManager itm = new ImportTableManager(source, _loggingHelper);
+        int importId = _monDataLayer.GetNextImportEventId();
+        ImportEvent import = itm.CreateImportEvent(importId);        
+        itm.CreateImportTables();       
+        itm.FillImportTables();
         _loggingHelper.LogDiffs(source);
 
-        // Create import event log record and start 
-        // the data transfer proper...
-
-        int importId = _monDataLayer.GetNextImportEventId();
-        ImportEvent import = ib.CreateImportEvent(importId);
-
-        // Consider new studies, record dates, edited studies and / or objects,
-        // and any deleted studies / objects
-
-        _loggingHelper.LogHeader("Adding new data");
+        // Start the data transfer.
+        // Consider matched studies and objects - delete these first from the 
+        // ad tables, re-assign ids on the ad tables, and then add ALL the 
+        // sd data, matched and new, as new data.
+        // (if rebuild all tables is true no need to delete any matched data first)
+   
+        DataTransferManager dtm = new DataTransferManager(source, _loggingHelper);
+        dtm.EstablishForeignMonTables(_monDataLayer.Credentials);
+        _loggingHelper.LogLine("Foreign (mon) tables established in database");     
+                
         if (source.has_study_tables is true)
         {
-            dataTransferrer.AddNewStudies(importId);
+            dtm.DeleteMatchedStudyData(importId);
         }
-        dataTransferrer.AddNewDataObjects(importId);
-
-        _loggingHelper.LogHeader("Editing existing data where necessary");
-        if (source.has_study_tables is true)
-        {
-            dataTransferrer.UpdateEditedStudyData(importId);
-        }
-        dataTransferrer.UpdateEditedDataObjectData(importId);
-
-        _loggingHelper.LogHeader("Updating dates of data");
-        dataTransferrer.UpdateDatesOfData();
+        dtm.DeleteMatchedDataObjectData(importId);
+        _loggingHelper.LogHeader("Matched data deleted from ad tables");
         
-        _loggingHelper.LogHeader("Deleting data no longer present in source");
         if (source.has_study_tables is true)
         {
-            dataTransferrer.RemoveDeletedStudyData(importId);
+            dtm.AddStudies(importId);
         }
-        dataTransferrer.RemoveDeletedDataObjectData(importId);
+        dtm.AddDataObjects(importId);
+        _loggingHelper.LogHeader("New data added to ad tables");
 
-        // Tidy up - 
-        // Update the 'date imported' record in the mon.source data tables
-        // Affects all records with status 1, 2 or 3 (non-test imports only)   
-        // Remove foreign tables
+        // Tidy up - Update the 'date imported' record in the
+        // mon.source data tables. Remove foreign tables
         // Store import event for non-test imports.      
         
         _loggingHelper.LogHeader("Tidy up and finish");
@@ -126,7 +115,7 @@ public class Importer
             // only do the objects table if there are no studies (e.g. PubMed)
             _monDataLayer.UpdateObjectsLastImportedDate(importId, source.id);
         }
-        dataTransferrer.DropForeignMonTables();
+        dtm.DropForeignMonTables();
         _loggingHelper.LogLine("Foreign (mon) tables removed from database");    
         _monDataLayer.StoreImportEvent(import);
 
