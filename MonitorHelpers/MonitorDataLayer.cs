@@ -10,22 +10,16 @@ namespace MDR_Importer;
 public class MonDataLayer : IMonDataLayer
 {
     private readonly ICredentials _credentials;
+    private readonly ILoggingHelper _loggingHelper;    
     private readonly string? _sqlFileSelectString;
     private readonly string? _connString;
-    private readonly ILoggingHelper _loggingHelper;
     
     public MonDataLayer(ICredentials credentials, ILoggingHelper loggingHelper)
     {
-        NpgsqlConnectionStringBuilder builder = new();
-        builder.Host = credentials.Host;
-        builder.Username = credentials.Username;
-        builder.Password = credentials.Password;
-
-        builder.Database = "mon";
-        _connString = builder.ConnectionString;
-
         _credentials = credentials;
         _loggingHelper = loggingHelper;
+
+        _connString = credentials.GetConnectionString("mon", false);
 
         _sqlFileSelectString = "select id, source_id, sd_id, remote_url, last_revised, ";
         _sqlFileSelectString += " assume_complete, download_status, local_path, last_saf_id, last_downloaded, ";

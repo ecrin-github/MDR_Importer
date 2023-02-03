@@ -179,7 +179,8 @@ public class LoggingHelper : ILoggingHelper
             // these are database dependent
             if (s.has_study_topics is true) LogLine(GetTableRecordCount(dbConn, schema, "study_topics"));
             if (s.has_study_features is true) LogLine(GetTableRecordCount(dbConn, schema, "study_features"));
-            if (s.has_study_contributors is true) LogLine(GetTableRecordCount(dbConn, schema, "study_contributors"));
+            if (s.has_study_people is true) LogLine(GetTableRecordCount(dbConn, schema, "study_people"));
+            if (s.has_study_organisations is true) LogLine(GetTableRecordCount(dbConn, schema, "has_study_organisations"));
             if (s.has_study_references is true) LogLine(GetTableRecordCount(dbConn, schema, "study_references"));
             if (s.has_study_relationships is true) LogLine(GetTableRecordCount(dbConn, schema, "study_relationships"));
             if (s.has_study_links is true) LogLine(GetTableRecordCount(dbConn, schema, "study_links"));
@@ -203,7 +204,8 @@ public class LoggingHelper : ILoggingHelper
         if (s.has_object_pubmed_set is true)
         {
             LogLine(GetTableRecordCount(dbConn, schema, "citation_objects"));
-            LogLine(GetTableRecordCount(dbConn, schema, "object_contributors"));
+            LogLine(GetTableRecordCount(dbConn, schema, "object_people"));
+            LogLine(GetTableRecordCount(dbConn, schema, "object_organisations"));
             LogLine(GetTableRecordCount(dbConn, schema, "object_topics"));
             LogLine(GetTableRecordCount(dbConn, schema, "object_comments"));
             LogLine(GetTableRecordCount(dbConn, schema, "object_descriptions"));

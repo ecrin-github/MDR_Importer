@@ -5,22 +5,18 @@ namespace MDR_Importer;
 
 public class StudyTableBuilders
 {
-    string _db_conn;
+    private readonly string _db_conn;
 
     public StudyTableBuilders(string db_conn)
     {
         _db_conn = db_conn;
     }
 
-
     public void Execute_SQL(string sql_string)
     {
-        using (var conn = new NpgsqlConnection(_db_conn))
-        {
-            conn.Execute(sql_string);
-        }
+        using var conn = new NpgsqlConnection(_db_conn);
+        conn.Execute(sql_string);
     }
-
 
     public void create_ad_schema()
     {
@@ -28,7 +24,6 @@ public class StudyTableBuilders
 
         Execute_SQL(sql_string);
     }
-
 
     public void create_table_studies()
     {
@@ -50,15 +45,11 @@ public class StudyTableBuilders
           , min_age_units_id       INT             NULL
           , max_age                INT             NULL
           , max_age_units_id       INT             NULL
+          , iec_level              INT             NULL
           , datetime_of_data_fetch TIMESTAMPTZ     NULL
-          , record_hash            CHAR(32)        NULL
-          , study_full_hash        CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
-          , last_edited_on         TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX studies_sid ON ad.studies(sd_sid);
-        CREATE INDEX studies_hash ON ad.studies(record_hash);
-        CREATE INDEX studies_full_hash ON ad.studies(study_full_hash);";
+        CREATE INDEX studies_sid ON ad.studies(sd_sid);";
 
         Execute_SQL(sql_string);
     }
@@ -77,14 +68,13 @@ public class StudyTableBuilders
           , identifier_org_ror_id  VARCHAR         NULL
           , identifier_date        VARCHAR         NULL
           , identifier_link        VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
+          , coded_on               TIMESTAMPTZ     NULL                                     
         );
         CREATE INDEX study_identifiers_sid ON ad.study_identifiers(sd_sid);";
 
         Execute_SQL(sql_string);
     }
-
 
     public void create_table_study_relationships()
     {
@@ -94,7 +84,6 @@ public class StudyTableBuilders
           , sd_sid                 VARCHAR         NOT NULL
           , relationship_type_id   INT             NULL
           , target_sd_sid          VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
         CREATE INDEX study_relationships_sid ON ad.study_relationships(sd_sid);
@@ -113,8 +102,8 @@ public class StudyTableBuilders
           , pmid                   VARCHAR         NULL
           , citation               VARCHAR         NULL
           , doi                    VARCHAR         NULL	
+          , type_id                INT             NULL
           , comments               VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
         CREATE INDEX study_references_sid ON ad.study_references(sd_sid);";
@@ -135,7 +124,6 @@ public class StudyTableBuilders
           , lang_usage_id          INT             NOT NULL default 11
           , is_default             BOOLEAN         NULL
           , comments               VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
         CREATE INDEX study_titles_sid ON ad.study_titles(sd_sid);";
@@ -144,15 +132,13 @@ public class StudyTableBuilders
     }
 
 
-    public void create_table_study_contributors()
+    public void create_table_study_people()
     {
-        string sql_string = @"DROP TABLE IF EXISTS ad.study_contributors;
-        CREATE TABLE ad.study_contributors(
+        string sql_string = @"DROP TABLE IF EXISTS ad.study_people;
+        CREATE TABLE ad.study_people(
             id                     INT             GENERATED ALWAYS AS IDENTITY PRIMARY KEY
           , sd_sid                 VARCHAR         NOT NULL
           , contrib_type_id        INT             NULL
-          , is_individual          BOOLEAN         NULL
-          , person_id              INT             NULL
           , person_given_name      VARCHAR         NULL
           , person_family_name     VARCHAR         NULL
           , person_full_name       VARCHAR         NULL
@@ -161,10 +147,29 @@ public class StudyTableBuilders
           , organisation_id        INT             NULL
           , organisation_name      VARCHAR         NULL
           , organisation_ror_id    VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
+          , coded_on               TIMESTAMPTZ     NULL
         );
-        CREATE INDEX study_contributors_sid ON ad.study_contributors(sd_sid);";
+        CREATE INDEX study_people_sid ON ad.study_people(sd_sid);";
+
+        Execute_SQL(sql_string);
+    }
+    
+    
+    public void create_table_study_organisations()
+    {
+        string sql_string = @"DROP TABLE IF EXISTS ad.study_organisations;
+        CREATE TABLE ad.study_organisations(
+            id                     INT             GENERATED ALWAYS AS IDENTITY PRIMARY KEY
+          , sd_sid                 VARCHAR         NOT NULL
+          , contrib_type_id        INT             NULL
+          , organisation_id        INT             NULL
+          , organisation_name      VARCHAR         NULL
+          , organisation_ror_id    VARCHAR         NULL
+          , added_on               TIMESTAMPTZ     NOT NULL default now()
+          , coded_on               TIMESTAMPTZ     NULL
+        );
+        CREATE INDEX study_organisations_sid ON ad.study_organisations(sd_sid);";
 
         Execute_SQL(sql_string);
     }
@@ -177,20 +182,37 @@ public class StudyTableBuilders
             id                     INT             GENERATED ALWAYS AS IDENTITY PRIMARY KEY
           , sd_sid                 VARCHAR         NOT NULL
           , topic_type_id          INT             NULL
-          , mesh_coded             BOOLEAN         NULL
+          , original_value         VARCHAR         NULL       
+          , original_ct_type_id    INT             NULL
+          , original_ct_code       VARCHAR         NULL 
           , mesh_code              VARCHAR         NULL
           , mesh_value             VARCHAR         NULL
-          , original_ct_id         INT             NULL
-          , original_ct_code       VARCHAR         NULL
-          , original_value         VARCHAR         NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
+          , coded_on               TIMESTAMPTZ     NULL
         );
         CREATE INDEX study_topics_sid ON ad.study_topics(sd_sid);";
 
         Execute_SQL(sql_string);
     }
 
+    public void create_table_study_conditions()
+    {
+        string sql_string = @"DROP TABLE IF EXISTS sd.study_conditions;
+        CREATE TABLE sd.study_conditions(
+            id                     INT             GENERATED ALWAYS AS IDENTITY PRIMARY KEY
+          , sd_sid                 VARCHAR         NOT NULL
+          , original_value         VARCHAR         NULL
+          , original_ct_type_id    INT             NULL
+          , original_ct_code       VARCHAR         NULL                 
+          , icd_code               VARCHAR         NULL
+          , icd_name               VARCHAR         NULL
+          , added_on               TIMESTAMPTZ     NOT NULL default now()
+          , coded_on               TIMESTAMPTZ     NULL
+        );
+        CREATE INDEX study_conditions_sd_sid ON sd.study_conditions(sd_sid);";
+
+        Execute_SQL(sql_string);
+    }
 
     public void create_table_study_features()
     {
@@ -200,7 +222,6 @@ public class StudyTableBuilders
           , sd_sid                 VARCHAR         NOT NULL
           , feature_type_id        INT             NULL
           , feature_value_id       INT             NULL
-          , record_hash            CHAR(32)        NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
         CREATE INDEX study_features_sid ON ad.study_features(sd_sid);";

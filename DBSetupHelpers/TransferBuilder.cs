@@ -47,7 +47,8 @@ class DataTransferrer
         // These are database dependent
 
         if (_source.has_study_references is true) _studyAdder.TransferStudyReferences();
-        if (_source.has_study_contributors is true) _studyAdder.TransferStudyContributors();
+        if (_source.has_study_people is true) _studyAdder.TransferStudyPeople();
+        if (_source.has_study_organisations is true) _studyAdder.TransferStudyOrganisations();
         if (_source.has_study_topics is true) _studyAdder.TransferStudyTopics();
         if (_source.has_study_features is true) _studyAdder.TransferStudyFeatures();
         if (_source.has_study_relationships is true) _studyAdder.TransferStudyRelationships();
@@ -80,7 +81,8 @@ class DataTransferrer
         if (_source.has_object_relationships is true) _objectAdder.TransferObjectRelationships();
         if (_source.has_object_pubmed_set is true)
         {
-            _objectAdder.TransferObjectContributors();
+            _objectAdder.TransferObjectPeople();
+            _objectAdder.TransferObjectOrganisations();
             _objectAdder.TransferObjectTopics();
             _objectAdder.TransferObjectComments();
             _objectAdder.TransferObjectDescriptions();
@@ -112,7 +114,8 @@ class DataTransferrer
 
         // these are database dependent
         if (_source.has_study_references is true) _studyEditor.EditStudyReferences();
-        if (_source.has_study_contributors is true) _studyEditor.EditStudyContributors();
+        if (_source.has_study_people is true) _studyEditor.EditStudyPeople();
+        if (_source.has_study_organisations is true) _studyEditor.EditStudyOrganisations();
         if (_source.has_study_topics is true) _studyEditor.EditStudyTopics();
         if (_source.has_study_features is true) _studyEditor.EditStudyFeatures();
         if (_source.has_study_relationships is true) _studyEditor.EditStudyRelationships();
@@ -147,7 +150,8 @@ class DataTransferrer
         if (_source.has_object_relationships is true) _objectEditor.EditObjectRelationships();
         if (_source.has_object_pubmed_set is true)
         {
-            _objectEditor.EditObjectContributors();
+            _objectEditor.EditObjectPeople();
+            _objectEditor.EditObjectOrganisations();
             _objectEditor.EditObjectTopics();
             _objectEditor.EditObjectComments();
             _objectEditor.EditObjectDescriptions();
@@ -173,7 +177,8 @@ class DataTransferrer
 
         // these are database dependent
         if (_source.has_study_references is true) _studyEditor.DeleteStudyRecords("study_references");
-        if (_source.has_study_contributors is true) _studyEditor.DeleteStudyRecords("study_contributors");
+        if (_source.has_study_people is true) _studyEditor.DeleteStudyRecords("study_people");
+        if (_source.has_study_organisations is true) _studyEditor.DeleteStudyRecords("study_organisations");
         if (_source.has_study_topics is true) _studyEditor.DeleteStudyRecords("study_topics");
         if (_source.has_study_features is true) _studyEditor.DeleteStudyRecords("study_features"); ;
         if (_source.has_study_relationships is true) _studyEditor.DeleteStudyRecords("study_relationships");
@@ -201,7 +206,8 @@ class DataTransferrer
         if (_source.has_object_dates is true) _objectEditor.DeleteObjectRecords("object_dates");
         if (_source.has_object_pubmed_set is true)
         {
-            _objectEditor.DeleteObjectRecords("object_contributors"); ;
+            _objectEditor.DeleteObjectRecords("object_people"); ;
+            _objectEditor.DeleteObjectRecords("object_organisations"); ;
             _objectEditor.DeleteObjectRecords("object_topics");
             _objectEditor.DeleteObjectRecords("object_comments");
             _objectEditor.DeleteObjectRecords("object_descriptions");
@@ -217,29 +223,4 @@ class DataTransferrer
 
         _loggingHelper.LogLine("Deleted " + res.ToString() + " object records and related data");
     }
-
-/*
-    public void UpdateFullRecordHashes()
-    {
-        if (_source.has_study_tables is true)
-        {
-            _studyEditor.UpdateFullStudyHash();
-        }
-        _objectEditor.UpdateFullObjectHash();
-        _loggingHelper.LogLine("Full hash values updated");
-    }
-*/
-
-/*
-    public void UpdateStudiesLastImportedDate(int importId)
-    {
-        _studyEditor.UpdateStudiesLastImportedDate(importId, _source.id);
-    }
-
-
-    public void UpdateObjectsLastImportedDate(int importId)
-    {
-        _objectEditor.UpdateObjectsLastImportedDate(importId, _source.id);
-    }
-    */
 }
