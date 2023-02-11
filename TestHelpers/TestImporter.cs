@@ -84,8 +84,7 @@ public class TestImporter
     {
         // Obtain source details, augment with connection string for this database.
 
-        Credentials creds = _monDataLayer.Credentials;
-        source.db_conn = creds.GetConnectionString(source.database_name!, true);
+        source.db_conn = _monDataLayer.GetConnectionString(source.database_name!, true);
         _loggingHelper.LogStudyHeader(opts, "For source: " + source?.id! + ": " + source?.database_name!);
         _loggingHelper.LogHeader("Setup");
 
@@ -93,15 +92,7 @@ public class TestImporter
         // sd tables to the sd tables for this source.
         
         _testRepo.RetrieveSDData(source!);
-
-        // Establish top level builder classes and 
-        // set up sf monitor tables as foreign tables, temporarily.
-
-        ImportBuilder ib = new ImportBuilder(source!, _loggingHelper);
-        DataTransferrer transferrer = new DataTransferrer(source!, _loggingHelper);
-        transferrer.EstablishForeignMonTables(creds);
-        _loggingHelper.LogLine("Foreign (mon) tables established in database");
-
+        
         // Recreate ad tables if necessary. If the second pass of a 
         // test loop will need to retrieve the ad data back from compad
 
@@ -114,59 +105,51 @@ public class TestImporter
         {
             _testRepo.RetrieveADData(source!);
         }
-
-        // Create and fill temporary tables to hold ids and edit statuses  
-        // of new, edited, deleted studies and data objects.
-        // Do not count deleted records on first pass, do on second.
+        
+        // Create import event log record.
+        // Create and fill temporary tables to hold ids and statuses  
+        // of new or matched sd studies and sd data objects.
+        
+        // Establish top level builder classes and 
+        // set up sf monitor tables as foreign tables, temporarily.
         
         _loggingHelper.LogHeader("Start Import Process");
         _loggingHelper.LogHeader("Create and fill diff tables");
-        ib.CreateImportTables();
-        bool countDeleted = opts.RebuildAdTables is not true;
-        ib.FillImportTables(countDeleted);     
-        _loggingHelper.LogDiffs(source!);
-
-        // Create import event log record and start 
-        // the data transfer proper...
-
+        
+        ImportTableManager itm = new ImportTableManager(source, _loggingHelper);
+        _loggingHelper.LogLine("Foreign (mon) tables established in database");
         int importId = _monDataLayer.GetNextImportEventId();
-        ImportEvent import = ib.CreateImportEvent(importId);
+        ImportEvent import = itm.CreateImportEvent(importId);        itm.CreateImportTables();       
+        itm.FillImportTables();
+        _loggingHelper.LogDiffs(source);
 
-        // Consider new studies, record dates, edited studies and / or objects,
-        // and any deleted studies / objects
+        // Start the data transfer.
+        // Consider matched studies and objects - delete these first from the 
+        // ad tables, re-assign ids on the ad tables, and then add ALL the 
+        // sd data, matched and new, as new data.
+        // (if rebuild all tables is true no need to delete any matched data first)
 
-        _loggingHelper.LogHeader("Adding new data");
-        if (source!.has_study_tables is true)
+        DataTransferManager dtm = new DataTransferManager(source, _loggingHelper);
+       _loggingHelper.LogLine("Foreign (mon) tables established in database");     
+
+        if (source.has_study_tables is true)
         {
-            transferrer.AddNewStudies(importId);
+            dtm.DeleteMatchedStudyData(importId);
         }
-        transferrer.AddNewDataObjects(importId);
-
-        /*
-        _loggingHelper.LogHeader("Editing existing data where necessary");
-        if (source!.has_study_tables is true)
-        { 
-            transferrer.UpdateEditedStudyData(importId);
-        }
-        transferrer.UpdateEditedDataObjectData(importId);
-        */
+        dtm.DeleteMatchedDataObjectData(importId);
+        _loggingHelper.LogHeader("Matched data deleted from ad tables");
         
-        _loggingHelper.LogHeader("Updating dates of data");
-        transferrer.UpdateDatesOfData();   
-        
-        _loggingHelper.LogHeader("Deleting data no longer present in source");
-        if (source!.has_study_tables is true)
+        if (source.has_study_tables is true)
         {
-            transferrer.RemoveMatchedStudyData(importId);
+            dtm.AddStudies(importId);
         }
-        transferrer.RemoveMatchedDataObjectData(importId);
-        
+        dtm.AddDataObjects(importId);
+        _loggingHelper.LogHeader("New data added to ad tables");
+
         // Copy ad data from ad tables to the compad tables...
         // Tidy up by removing monitoring tables
         
         _testRepo.TransferADDataToComp(source);        
-        transferrer.DropForeignMonTables();
-        _loggingHelper.LogLine("Foreign (mon) tables removed from database");
     } 
 }
  

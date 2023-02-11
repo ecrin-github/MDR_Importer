@@ -30,7 +30,8 @@ class RetrieveADDataBuilder
 
         if (_source.has_study_topics is true) DeleteData("study_topics");
         if (_source.has_study_features is true) DeleteData("study_features");
-        if (_source.has_study_contributors is true) DeleteData("study_contributors");
+        if (_source.has_study_people is true) DeleteData("study_people");
+        if (_source.has_study_organisations is true) DeleteData("study_organisations");
         if (_source.has_study_references is true) DeleteData("study_references");
         if (_source.has_study_relationships is true) DeleteData("study_relationships");
         if (_source.has_study_links is true) DeleteData("study_links");
@@ -79,7 +80,8 @@ class RetrieveADDataBuilder
 
         if (_source.has_study_topics is true) adr.TransferStudyTopics();
         if (_source.has_study_features is true) adr.TransferStudyFeatures();
-        if (_source.has_study_contributors is true) adr.TransferStudyContributors();
+        if (_source.has_study_people is true) adr.TransferStudyPeople();
+        if (_source.has_study_organisations is true) adr.TransferStudyOrganisations();
         if (_source.has_study_references is true) adr.TransferStudyReferences();
         if (_source.has_study_relationships is true) adr.TransferStudyRelationships();
         if (_source.has_study_links is true) adr.TransferStudyLinks();

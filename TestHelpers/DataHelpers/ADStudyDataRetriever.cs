@@ -102,7 +102,27 @@ class AdStudyDataRetriever
     }
 
 
-    public void TransferStudyContributors()
+    public void TransferStudyPeople()
+    {
+        string sqlString = @"INSERT INTO ad.study_contributors(sd_sid, 
+        contrib_type_id, is_individual, 
+        person_id, person_given_name, person_family_name, person_full_name,
+        orcid_id, person_affiliation, organisation_id, 
+        organisation_name, organisation_ror_id)
+        SELECT sd_sid,
+        contrib_type_id, is_individual, 
+        person_id, person_given_name, person_family_name, person_full_name,
+        orcid_id, person_affiliation, organisation_id, 
+        organisation_name, organisation_ror_id
+        FROM adcomp.study_contributors
+        where source_id = " + _sourceId;
+
+        Execute_SQL(sqlString);
+
+    }
+    
+    
+    public void TransferStudyOrganisations()
     {
         string sqlString = @"INSERT INTO ad.study_contributors(sd_sid, 
         contrib_type_id, is_individual, 
