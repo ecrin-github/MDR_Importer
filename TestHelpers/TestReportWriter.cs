@@ -1,14 +1,11 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.Configuration;
-
+﻿using Microsoft.Extensions.Configuration;
 namespace MDR_Importer;
 
 public class TestReportWriter
 {
-    private string _logfileStartOfPath;
-    private string? logfile_path;
-    private StreamWriter? sw;
+    private readonly string _logfileStartOfPath;
+    private string? _logfile_path;
+    private StreamWriter? _sw;
     
     public TestReportWriter()
     {
@@ -17,18 +14,18 @@ public class TestReportWriter
             .AddJsonFile("appsettings.json")
             .Build();
 
-        _logfileStartOfPath = settings["logfilepath"] ?? "";
+        _logfileStartOfPath = settings["logFilePath"] ?? "";
     }
   
-    public void OpenLogFile(string logfile_startofpath)
+    public void OpenLogFile()
     {
         string dtString = DateTime.Now.ToString("s", 
                            System.Globalization.CultureInfo.InvariantCulture)
                           .Replace(":", "").Replace("T", " ");
         
-        logfile_path = logfile_startofpath + "IMPORT TEST REPORT";
-        logfile_path += " " + dtString + ".log";
-        sw = new StreamWriter(logfile_path, false, System.Text.Encoding.UTF8);
+        _logfile_path = _logfileStartOfPath + "IMPORT TEST REPORT";
+        _logfile_path += " " + dtString + ".log";
+        _sw = new StreamWriter(_logfile_path, false, System.Text.Encoding.UTF8);
 
     }
 
@@ -74,14 +71,14 @@ public class TestReportWriter
     public void CloseLog()
     {
         LogHeader("Closing Log");
-        sw!.Flush();
-        sw!.Close();
+        _sw!.Flush();
+        _sw!.Close();
     }
 
 
     private void Transmit(string message)
     {
-        sw!.WriteLine(message);
+        _sw!.WriteLine(message);
         Console.WriteLine(message);
     }
 

@@ -1,9 +1,8 @@
 ﻿using Dapper;
 using Npgsql;
-
 namespace MDR_Importer;
 
-class AdStudyDataRetriever
+internal class AdStudyDataRetriever
 {
     private readonly string _sourceId;
     private readonly string _dbConn;

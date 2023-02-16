@@ -1,12 +1,11 @@
 ﻿using Dapper;
 using Npgsql;
-
 namespace MDR_Importer;
 
 class ObjectTablesTransferrer
 {
-    private string _source_id;
-    private string _db_conn;
+    private readonly string _source_id;
+    private readonly string _db_conn;
 
     public ObjectTablesTransferrer(int? source_id, string db_conn)
     {
@@ -17,10 +16,8 @@ class ObjectTablesTransferrer
 
     private void Execute_SQL(string sql_string)
     {
-        using (var conn = new NpgsqlConnection(_db_conn))
-        {
-            conn.Execute(sql_string);
-        }
+        using var conn = new NpgsqlConnection(_db_conn);
+        conn.Execute(sql_string);
     }
 
 

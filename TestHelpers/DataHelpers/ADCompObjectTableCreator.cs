@@ -1,14 +1,10 @@
 ﻿using Dapper;
 using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace MDR_Importer;
 
 public class ADCompObjectTableCreator
 {
-    string _db_conn;
+    private readonly string _db_conn;
 
     public ADCompObjectTableCreator(string db_conn)
     {
@@ -17,10 +13,8 @@ public class ADCompObjectTableCreator
 
     private void Execute_SQL(string sql_string)
     {
-        using (var conn = new NpgsqlConnection(_db_conn))
-        {
-            conn.Execute(sql_string);
-        }
+        using var conn = new NpgsqlConnection(_db_conn);
+        conn.Execute(sql_string);
     }
 
     public void create_table_data_objects()

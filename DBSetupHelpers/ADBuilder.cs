@@ -13,9 +13,9 @@ class AdBuilder
         _source = source;
         _loggingHelper = loggingHelper;        
         
-        var connString = _source.db_conn ?? "";
-        _studyBuilder = new StudyTableBuilders(connString);
-        _objectBuilder = new ObjectTableBuilders(connString);
+        var db_conn = _source.db_conn ?? "";
+        _studyBuilder = new StudyTableBuilders(db_conn);
+        _objectBuilder = new ObjectTableBuilders(db_conn);
     }
 
 

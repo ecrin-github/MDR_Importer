@@ -3,13 +3,11 @@ namespace MDR_Importer;
 
 class StudyDataAdder
 {
-    ILoggingHelper _logging_helper;
-    DBUtilities dbu;
+    private readonly  DBUtilities _dbu;
 
-    public StudyDataAdder(string connstring, ILoggingHelper logging_helper)
+    public StudyDataAdder(string db_conn, ILoggingHelper logging_helper)
     {
-        _logging_helper = logging_helper;
-        dbu = new DBUtilities(connstring, _logging_helper);
+        _dbu = new DBUtilities(db_conn, logging_helper);
     }
 
     public void TransferStudies()
@@ -29,7 +27,7 @@ class StudyDataAdder
         ON s.sd_sid = ts.sd_sid
         where ts.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "studies", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "studies", "Adding");
     }
 
     public void TransferStudyIdentifiers()
@@ -47,7 +45,7 @@ class StudyDataAdder
         ON s.sd_sid = ts.sd_sid
         where ts.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_identifiers", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_identifiers", "Adding");
     }
 
     public void TransferStudyTitles()
@@ -63,7 +61,7 @@ class StudyDataAdder
         ON s.sd_sid = ts.sd_sid
         where ts.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_titles", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_titles", "Adding");
     }
 
     public void TransferStudyReferences()
@@ -77,7 +75,7 @@ class StudyDataAdder
         ON s.sd_sid = ts.sd_sid
         where ts.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_references", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_references", "Adding");
     }
 
     public void TransferStudyPeople()
@@ -97,7 +95,7 @@ class StudyDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_people", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_people", "Adding");
     }
     
     
@@ -114,7 +112,7 @@ class StudyDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_organisations", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_organisations", "Adding");
     }
 
     public void TransferStudyTopics()
@@ -147,7 +145,7 @@ class StudyDataAdder
         ON s.sd_sid = ts.sd_sid
         where ts.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_relationships", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_relationships", "Adding");
     }
 
 
@@ -162,7 +160,7 @@ class StudyDataAdder
         ON s.sd_sid = ts.sd_sid
         where ts.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_features", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_features", "Adding");
     }
 
 
@@ -177,7 +175,7 @@ class StudyDataAdder
         ON s.sd_sid = ts.sd_sid
         where ts.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_links", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_links", "Adding");
     }
 
 
@@ -192,7 +190,7 @@ class StudyDataAdder
         ON s.sd_sid = ts.sd_sid
         where ts.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_countries", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_countries", "Adding");
     }
 
     
@@ -209,7 +207,7 @@ class StudyDataAdder
         ON s.sd_sid = ts.sd_sid
         where ts.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_locations", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_locations", "Adding");
     }
 
 
@@ -224,7 +222,7 @@ class StudyDataAdder
         ON s.sd_sid = ts.sd_sid
         where ts.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "study_ipd_available", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "study_ipd_available", "Adding");
     }
     
    

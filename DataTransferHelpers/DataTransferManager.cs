@@ -17,12 +17,12 @@ class DataTransferManager
         _source = source;
         _loggingHelper = loggingHelper;    
         
-        var connString = _source.db_conn ?? "";
-        _ftm = new ForeignTableManager(connString);
-        _studyAdder = new StudyDataAdder(connString, _loggingHelper);
-        _objectAdder = new DataObjectDataAdder(connString, _loggingHelper);
-        _studyDeleter = new StudyDataDeleter(connString, _loggingHelper);
-        _objectDeleter = new DataObjectDataEditor(connString, _loggingHelper);
+        var db_conn = _source.db_conn ?? "";
+        _ftm = new ForeignTableManager(db_conn);
+        _studyAdder = new StudyDataAdder(db_conn, _loggingHelper);
+        _objectAdder = new DataObjectDataAdder(db_conn, _loggingHelper);
+        _studyDeleter = new StudyDataDeleter(db_conn, _loggingHelper);
+        _objectDeleter = new DataObjectDataEditor(db_conn, _loggingHelper);
     }
 
     public void EstablishForeignMonTables(ICredentials creds)
@@ -101,7 +101,7 @@ class DataTransferManager
         if (_source.has_study_people is true) _studyDeleter.DeleteStudyRecords("study_people");
         if (_source.has_study_organisations is true) _studyDeleter.DeleteStudyRecords("study_organisations");
         if (_source.has_study_topics is true) _studyDeleter.DeleteStudyRecords("study_topics");
-        if (_source.has_study_features is true) _studyDeleter.DeleteStudyRecords("study_features"); ;
+        if (_source.has_study_features is true) _studyDeleter.DeleteStudyRecords("study_features");
         if (_source.has_study_relationships is true) _studyDeleter.DeleteStudyRecords("study_relationships");
         if (_source.has_study_links is true) _studyDeleter.DeleteStudyRecords("study_links");
         if (_source.has_study_countries is true) _studyDeleter.DeleteStudyRecords("study_countries");
@@ -130,14 +130,14 @@ class DataTransferManager
         if (_source.has_object_dates is true) _objectDeleter.DeleteObjectRecords("object_dates");
         if (_source.has_object_pubmed_set is true)
         {
-            _objectDeleter.DeleteObjectRecords("object_people"); ;
-            _objectDeleter.DeleteObjectRecords("object_organisations"); ;
+            _objectDeleter.DeleteObjectRecords("object_people");
+            _objectDeleter.DeleteObjectRecords("object_organisations");
             _objectDeleter.DeleteObjectRecords("object_topics");
             _objectDeleter.DeleteObjectRecords("object_comments");
             _objectDeleter.DeleteObjectRecords("object_descriptions");
             _objectDeleter.DeleteObjectRecords("object_identifiers");
             _objectDeleter.DeleteObjectRecords("object_db_links");
-            _objectDeleter.DeleteObjectRecords("object_publication_types"); ;
+            _objectDeleter.DeleteObjectRecords("object_publication_types");
         }
 
         _loggingHelper.LogLine("Deleted " + res.ToString() + " object records and related data");

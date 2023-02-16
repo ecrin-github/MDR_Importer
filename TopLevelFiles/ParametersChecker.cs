@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CommandLine;
-
+﻿using CommandLine;
 namespace MDR_Importer;
 
 internal class ParameterChecker 
@@ -46,20 +42,24 @@ internal class ParameterChecker
 
         try
         {
+            // If processing test data set the program should run but
+            // the set of correct source ids must be created. 
+            // If just doing a test result the program can be run in any case.
+            
             if (opts.UsingTestData is true)
             {
-                // Set up array of source ids to reflect
-                // those in the test data set.
-
                 opts.SourceIds = _testRepo.ObtainTestSourceIDs();
-                return new ParamsCheckResult(false, false, opts);;     // Should always be able to run
+                return new ParamsCheckResult(false, false, opts); 
             }
             else if (opts.CreateTestReport is true)
             {
-                return new ParamsCheckResult(false, false, opts);;     // Should always be able to run
+                return new ParamsCheckResult(false, false, opts);    
             }
             else
-            { 
+            {
+                // if a non test import there has to be some
+                // sources identified, and they all have to be valid.
+                
                 if (opts.SourceIds?.Any() is not true)
                 {
                     throw new ArgumentException("No source id provided");
@@ -73,12 +73,14 @@ internal class ParameterChecker
                                                     " does not correspond to a known source");
                     }
                 }
-                
-                // parameters valid - return opts.
+
+                // If reached here parameters are valid - return opts.
 
                 return new ParamsCheckResult(false, false, opts);
             }
+
         }
+
 
         catch (Exception e)
         {
@@ -87,7 +89,7 @@ internal class ParameterChecker
             _loggingHelper.LogCommandLineParameters(opts);
             _loggingHelper.LogCodeError("Importer application aborted", e.Message, e.StackTrace);
             _loggingHelper.CloseLog();
-            return new ParamsCheckResult(false, true, null);;
+            return new ParamsCheckResult(false, true, null);
         }
 
     }

@@ -2,13 +2,11 @@
 
 class StudyDataDeleter
 {
-    ILoggingHelper _logging_helper;
-    DBUtilities dbu;
-
-    public StudyDataDeleter(string connstring, ILoggingHelper logging_helper)
+    private readonly DBUtilities _dbu;
+    
+    public StudyDataDeleter(string db_conn, ILoggingHelper logging_helper)
     {
-        _logging_helper = logging_helper;
-        dbu = new DBUtilities(connstring, _logging_helper);
+        _dbu = new DBUtilities(db_conn, logging_helper);
     }
     
 
@@ -41,7 +39,7 @@ class StudyDataDeleter
           using t
           where a.sd_sid = t.sd_sid;";
 
-        return dbu.ExecuteSQL(sql_string);
+        return _dbu.ExecuteSQL(sql_string);
 
     }
 

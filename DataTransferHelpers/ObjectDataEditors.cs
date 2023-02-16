@@ -3,13 +3,11 @@ namespace MDR_Importer;
 
 class DataObjectDataEditor
 {
-    ILoggingHelper _logging_helper;
-    DBUtilities dbu;
+    private readonly DBUtilities _dbu;
 
-    public DataObjectDataEditor(string connstring, ILoggingHelper logging_helper)
+    public DataObjectDataEditor(string db_conn, ILoggingHelper logging_helper)
     {
-        _logging_helper = logging_helper;
-        dbu = new DBUtilities(connstring, _logging_helper);
+        _dbu = new DBUtilities(db_conn, logging_helper);
     }
 
 
@@ -43,6 +41,6 @@ class DataObjectDataEditor
           using t
           where a.sd_oid = t.sd_oid;";
 
-        return dbu.ExecuteSQL(sql_string);
+        return _dbu.ExecuteSQL(sql_string);
     }
 }

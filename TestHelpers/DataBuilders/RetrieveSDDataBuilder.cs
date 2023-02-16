@@ -3,7 +3,7 @@ using Npgsql;
 
 namespace MDR_Importer;
 
-class RetrieveSDDataBuilder
+internal class RetrieveSDDataBuilder
 {
     private readonly int? _sourceId;
     private readonly string _dbConn;
@@ -120,15 +120,11 @@ class RetrieveSDDataBuilder
     }
 
 
-    private int DeleteData(string table_name)
+    private void DeleteData(string table_name)
     {
-        int res = 0;
         string sql_string = @"Delete from sd." + table_name;
-
-        using (var conn = new NpgsqlConnection(_dbConn))
-        {
-            return res = conn.Execute(sql_string);
-        }
+        using var conn = new NpgsqlConnection(_dbConn);
+        conn.Execute(sql_string);
     }
 
 }

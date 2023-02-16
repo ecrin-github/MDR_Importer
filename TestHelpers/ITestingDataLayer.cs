@@ -1,7 +1,4 @@
-﻿
-using System.Collections.Generic;
-
-namespace MDR_Importer;
+﻿namespace MDR_Importer;
 
 public interface ITestingDataLayer
 {

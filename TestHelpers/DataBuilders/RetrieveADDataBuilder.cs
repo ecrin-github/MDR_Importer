@@ -1,15 +1,13 @@
 ﻿using Dapper;
 using Npgsql;
-
-
 namespace MDR_Importer;
 
-class RetrieveADDataBuilder
+internal class RetrieveADDataBuilder
 {
 
     private readonly int? _sourceId;
     private readonly string _dbConn;
-    private Source _source;
+    private readonly Source _source;
 
     public RetrieveADDataBuilder(Source source)
     {
@@ -36,7 +34,7 @@ class RetrieveADDataBuilder
         if (_source.has_study_relationships is true) DeleteData("study_relationships");
         if (_source.has_study_links is true) DeleteData("study_links");
         if (_source.has_study_countries is true) DeleteData("study_countries");
-        if (_source.has_study_locations is true) DeleteData("study_locatgions");
+        if (_source.has_study_locations is true) DeleteData("study_locations");
         if (_source.has_study_ipd_available is true) DeleteData("study_ipd_available");
     }
 
@@ -119,15 +117,10 @@ class RetrieveADDataBuilder
         }
     }
 
-
-    private int DeleteData(string table_name)
+    private void DeleteData(string table_name)
     {
-        int res = 0;
         string sql_string = @"Delete from ad." + table_name;
-
-        using (var conn = new NpgsqlConnection(_dbConn))
-        {
-            return res = conn.Execute(sql_string);
-        }
+        using var conn = new NpgsqlConnection(_dbConn);
+        conn.Execute(sql_string);
     }
 }

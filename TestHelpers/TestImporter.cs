@@ -85,25 +85,25 @@ public class TestImporter
         // Obtain source details, augment with connection string for this database.
 
         source.db_conn = _monDataLayer.GetConnectionString(source.database_name!, true);
-        _loggingHelper.LogStudyHeader(opts, "For source: " + source?.id! + ": " + source?.database_name!);
+        _loggingHelper.LogStudyHeader(opts, "For source: " + source.id + ": " + source.database_name!);
         _loggingHelper.LogHeader("Setup");
 
         // First need to copy sd data back from composite
         // sd tables to the sd tables for this source.
         
-        _testRepo.RetrieveSDData(source!);
+        _testRepo.RetrieveSDData(source);
         
         // Recreate ad tables if necessary. If the second pass of a 
         // test loop will need to retrieve the ad data back from compad
 
         if (opts.RebuildAdTables is true)
         {
-            AdBuilder adb = new AdBuilder(source!, _loggingHelper);
+            AdBuilder adb = new AdBuilder(source, _loggingHelper);
             adb.BuildNewAdTables();
         }
         else
         {
-            _testRepo.RetrieveADData(source!);
+            _testRepo.RetrieveADData(source);
         }
         
         // Create import event log record.
@@ -119,7 +119,7 @@ public class TestImporter
         ImportTableManager itm = new ImportTableManager(source, _loggingHelper);
         _loggingHelper.LogLine("Foreign (mon) tables established in database");
         int importId = _monDataLayer.GetNextImportEventId();
-        ImportEvent import = itm.CreateImportEvent(importId);        itm.CreateImportTables();       
+        itm.CreateImportTables();       
         itm.FillImportTables();
         _loggingHelper.LogDiffs(source);
 

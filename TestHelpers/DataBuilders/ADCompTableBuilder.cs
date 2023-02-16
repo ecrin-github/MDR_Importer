@@ -3,7 +3,7 @@ namespace MDR_Importer;
 
 class ADCompTableBuilder
 {
-    private string _db_conn;
+    private readonly string _db_conn;
 
     public ADCompTableBuilder(string db_conn)
     {

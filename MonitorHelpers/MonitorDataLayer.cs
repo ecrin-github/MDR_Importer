@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Dapper;
+﻿using Dapper;
 using Dapper.Contrib.Extensions;
 using Npgsql;
-
 namespace MDR_Importer;
 
 public class MonDataLayer : IMonDataLayer
@@ -12,14 +8,14 @@ public class MonDataLayer : IMonDataLayer
     private readonly ICredentials _credentials;
     private readonly ILoggingHelper _loggingHelper;    
     private readonly string? _sqlFileSelectString;
-    private readonly string? _connString;
+    private readonly string? _db_conn;
     
     public MonDataLayer(ICredentials credentials, ILoggingHelper loggingHelper)
     {
         _credentials = credentials;
         _loggingHelper = loggingHelper;
 
-        _connString = credentials.GetConnectionString("mon", false);
+        _db_conn = credentials.GetConnectionString("mon", false);
 
         _sqlFileSelectString = "select id, source_id, sd_id, remote_url, last_revised, ";
         _sqlFileSelectString += " assume_complete, download_status, local_path, last_saf_id, last_downloaded, ";
@@ -34,20 +30,20 @@ public class MonDataLayer : IMonDataLayer
     public bool SourceIdPresent(int? sourceId)
     {
         string sqlString = "Select id from sf.source_parameters where id = " + sourceId.ToString();
-        using NpgsqlConnection conn = new(_connString);
+        using NpgsqlConnection conn = new(_db_conn);
         int res = conn.QueryFirstOrDefault<int>(sqlString);
         return (res != 0);
     }
     
     public Source? FetchSourceParameters(int? sourceId)
     {
-        using NpgsqlConnection conn = new(_connString);
+        using NpgsqlConnection conn = new(_db_conn);
         return conn.Get<Source>(sourceId);
     }
 
     public int GetNextImportEventId()
     {
-        using NpgsqlConnection conn = new(_connString);
+        using NpgsqlConnection conn = new(_db_conn);
         string sqlString = "select max(id) from sf.import_events ";
         int lastId = conn.ExecuteScalar<int>(sqlString);
         return (lastId == 0) ? 10001 : lastId + 1;
@@ -60,7 +56,7 @@ public class MonDataLayer : IMonDataLayer
         sqlString += " from sf.source_data_studies ";
         sqlString += GetWhereClause(sourceId, harvestTypeId, cutoffDate);
 
-        using NpgsqlConnection conn = new NpgsqlConnection(_connString);
+        using NpgsqlConnection conn = new NpgsqlConnection(_db_conn);
         return conn.Query<StudyFileRecord>(sqlString);
     }
 
@@ -71,7 +67,7 @@ public class MonDataLayer : IMonDataLayer
         sqlString += " from sf.source_data_objects";
         sqlString += GetWhereClause(sourceId, harvestTypeId, cutoffDate);
 
-        using NpgsqlConnection conn = new(_connString);
+        using NpgsqlConnection conn = new(_db_conn);
         return conn.Query<ObjectFileRecord>(sqlString);
     }
 
@@ -83,7 +79,7 @@ public class MonDataLayer : IMonDataLayer
                                              : "from sf.source_data_objects";
         sqlString += GetWhereClause(sourceId, harvestTypeId, cutoffDate);
 
-        using NpgsqlConnection conn = new(_connString);
+        using NpgsqlConnection conn = new(_db_conn);
         return conn.ExecuteScalar<int>(sqlString);
     }
 
@@ -96,7 +92,7 @@ public class MonDataLayer : IMonDataLayer
         sqlString += GetWhereClause(sourceId, harvestTypeId, cutoffDate);  
         sqlString += " offset " + offsetNum + " limit " + amount;
 
-        using NpgsqlConnection conn = new NpgsqlConnection(_connString);
+        using NpgsqlConnection conn = new NpgsqlConnection(_db_conn);
         return conn.Query<StudyFileRecord>(sqlString);
     }
 
@@ -108,7 +104,7 @@ public class MonDataLayer : IMonDataLayer
         sqlString += GetWhereClause(sourceId, harvestTypeId, cutoffDate);
         sqlString += " offset " + offsetNum + " limit " + amount;
 
-        using NpgsqlConnection conn = new(_connString);
+        using NpgsqlConnection conn = new(_db_conn);
         return conn.Query<ObjectFileRecord>(sqlString);
     }
 
@@ -140,7 +136,7 @@ public class MonDataLayer : IMonDataLayer
     // get record of interest
     public StudyFileRecord? FetchStudyFileRecord(string sdId, int? sourceId, string sourceType)
     {
-        using NpgsqlConnection conn = new(_connString);
+        using NpgsqlConnection conn = new(_db_conn);
         string sqlString = _sqlFileSelectString!;
         sqlString += " from sf.source_data_studies";
         sqlString += " where sd_id = '" + sdId + "' and source_id = " + sourceId.ToString();
@@ -150,7 +146,7 @@ public class MonDataLayer : IMonDataLayer
 
     public ObjectFileRecord? FetchObjectFileRecord(string sdId, int? sourceId, string sourceType)
     {
-        using NpgsqlConnection conn = new(_connString);
+        using NpgsqlConnection conn = new(_db_conn);
         string sqlString = _sqlFileSelectString!;
         sqlString += " from sf.source_data_objects";
         sqlString += " where sd_id = '" + sdId + "' and source_id = " + sourceId.ToString();
@@ -160,7 +156,7 @@ public class MonDataLayer : IMonDataLayer
 
     public void UpdateFileRecLastImported(int id, string sourceType)
     {
-        using NpgsqlConnection conn = new(_connString);
+        using NpgsqlConnection conn = new(_db_conn);
         string sqlString = sourceType.ToLower() == "study" ? "update sf.source_data_studies"
             : "update sf.source_data_objects";
         sqlString += " set last_imported = current_timestamp";
@@ -172,8 +168,8 @@ public class MonDataLayer : IMonDataLayer
     public int StoreImportEvent(ImportEvent import)
     {
         import.time_ended = DateTime.Now;
-        using NpgsqlConnection conn = new(_connString);
-        return (int)conn.Insert<ImportEvent>(import);
+        using NpgsqlConnection conn = new(_db_conn);
+        return (int)conn.Insert(import);
     }
 
 
@@ -184,7 +180,7 @@ public class MonDataLayer : IMonDataLayer
                           (select max(time_ended) from sf.harvest_events 
                            where source_id = {sourceId})";
 
-        using NpgsqlConnection conn = new(_connString);
+        using NpgsqlConnection conn = new(_db_conn);
         int res = conn.ExecuteScalar<int>(sqlString);
         return (res == 1);   // harvest type 1 = all records
     }
@@ -234,7 +230,7 @@ public class MonDataLayer : IMonDataLayer
     {
         try
         {   
-            using NpgsqlConnection conn = new(_connString);
+            using NpgsqlConnection conn = new(_db_conn);
             string feedbackA = $"Updating monitor import records, (mon.source_data_{tableName}), ";
             string sqlString = $"select count(*) from sd.{tableName}";
             int recCount  = conn.ExecuteScalar<int>(sqlString);

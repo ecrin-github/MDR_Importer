@@ -95,7 +95,7 @@ class TransferADDataBuilder
             if (_source.has_study_links is true) stt.TransferStudyLinks();
             if (_source.has_study_countries is true) stt.TransferStudyCountries();
             if (_source.has_study_locations is true) stt.TransferStudyLocations();
-            if (_source.has_study_ipd_available is true) stt.TransferStudyIPDAvaiable();
+            if (_source.has_study_ipd_available is true) stt.TransferStudyIPDAvailable();
         }
 
     }

@@ -1,49 +1,37 @@
 ﻿using Dapper;
 using Npgsql;
-
-using System;
-
 namespace MDR_Importer;
 
 class DBUtilities
 {
-    string _connstring;
-    ILoggingHelper _logging_helper;
+    private readonly string _db_conn;
+    private readonly ILoggingHelper _logging_helper;
 
-    public DBUtilities(string connstring, ILoggingHelper logging_helper)
+    public DBUtilities(string db_conn, ILoggingHelper logging_helper)
     {
-        _connstring = connstring;
+        _db_conn = db_conn;
         _logging_helper = logging_helper;
-
     }
 
     public int GetRecordCount(string table_name)
     {
-        int res = 0;
         string sql_string = @"select count(*) from sd." + table_name;
-        using (var conn = new NpgsqlConnection(_connstring))
-        {
-            res = conn.ExecuteScalar<int>(sql_string);
-        }
-        return res;
+        using var conn = new NpgsqlConnection(_db_conn);
+        return conn.ExecuteScalar<int>(sql_string);
     }
 
     public int ExecuteSQL(string sql_string)
     {
-        using (var conn = new NpgsqlConnection(_connstring))
-        {
-            return conn.Execute(sql_string);
-        }
+        using var conn = new NpgsqlConnection(_db_conn);
+        return conn.Execute(sql_string);
     }
 
 
-    public void ExecuteDandI(string sql_string1, string sql_string2, string table_name)
+    public void Execute_DelAndInsert(string sql_string1, string sql_string2, string table_name)
     {
-        using (var conn = new NpgsqlConnection(_connstring))
-        {
-            conn.Execute(sql_string1);
-            ExecuteTransferSQL(sql_string2, table_name, "Editing");
-        }
+        using var conn = new NpgsqlConnection(_db_conn);
+        conn.Execute(sql_string1);
+        ExecuteTransferSQL(sql_string2, table_name, "Editing");
     }
 
     // The T String identifies study / hash type combinations where ANY
@@ -195,7 +183,7 @@ class DBUtilities
     }
 
 
-    public void EditEntityRecords(string topstring, string basestring, string table_name)
+    public void EditEntityRecords(string top_string, string base_string, string table_name)
     {
         try
         {
@@ -206,8 +194,8 @@ class DBUtilities
             {
                 for (int r = 1; r <= rec_count; r += rec_batch)
                 {
-                    string batch_sql_string = topstring + " and so.id >= " + r.ToString() + " and so.id < " 
-                                            + (r + rec_batch).ToString() + basestring;
+                    string batch_sql_string = top_string + " and so.id >= " + r.ToString() + " and so.id < " 
+                                              + (r + rec_batch).ToString() + base_string;
                     int n = ExecuteSQL(batch_sql_string);
 
                     string feedback = "Editing " + table_name + " data, ids " + r.ToString() + " to ";
@@ -219,7 +207,7 @@ class DBUtilities
             }
             else
             {
-                int n = ExecuteSQL(topstring + basestring);
+                int n = ExecuteSQL(top_string + base_string);
                 _logging_helper.LogLine("Editing " + n.ToString() + " records in " + table_name + ", as a single batch");
             }
         }

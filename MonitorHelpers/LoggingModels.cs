@@ -1,6 +1,4 @@
 ﻿using Dapper.Contrib.Extensions;
-using System;
-
 namespace MDR_Importer;
 
 [Table("sf.source_parameters")]

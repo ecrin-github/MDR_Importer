@@ -4,13 +4,11 @@ namespace MDR_Importer;
 
 class DataObjectDataAdder
 {
-    ILoggingHelper _logging_helper;
-    DBUtilities dbu;
+    private readonly DBUtilities _dbu;
 
-    public DataObjectDataAdder(string connstring, ILoggingHelper logging_helper)
+    public DataObjectDataAdder(string db_conn, ILoggingHelper logging_helper)
     {
-        _logging_helper = logging_helper;
-        dbu = new DBUtilities(connstring, _logging_helper);
+        _dbu = new DBUtilities(db_conn, logging_helper);
     }
 
     public void TransferDataObjects()
@@ -32,7 +30,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "data_objects", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "data_objects", "Adding");
     }
 
 
@@ -57,7 +55,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_datasets", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_datasets", "Adding");
     }
 
 
@@ -76,7 +74,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_instances", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_instances", "Adding");
     }
 
     public void TransferObjectTitles()
@@ -92,7 +90,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_titles", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_titles", "Adding");
     }
     
 
@@ -109,7 +107,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_dates", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_dates", "Adding");
     }
 
     public void TransferObjectPeople()
@@ -129,7 +127,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_people", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_people", "Adding");
     }
     
     
@@ -146,7 +144,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_organisations", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_organisations", "Adding");
     }
 
     public void TransferObjectTopics()
@@ -164,7 +162,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_topics", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_topics", "Adding");
     }
 
 
@@ -179,7 +177,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_comments", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_comments", "Adding");
     }
 
 
@@ -196,7 +194,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_descriptions", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_descriptions", "Adding");
     }
 
     public void TransferObjectIdentifiers()
@@ -214,7 +212,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_identifiers", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_identifiers", "Adding");
     }
 
     public void TransferObjectDBLinks()
@@ -228,7 +226,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_db_links", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_db_links", "Adding");
     }
 
     public void TransferObjectPublicationTypes()
@@ -242,7 +240,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_publication_types", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_publication_types", "Adding");
     }
 
 
@@ -257,7 +255,7 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_rights", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_rights", "Adding");
     }
 
 
@@ -272,6 +270,6 @@ class DataObjectDataAdder
         ON s.sd_oid = nd.sd_oid
         WHERE nd.status = 1";
 
-        dbu.ExecuteTransferSQL(sql_string, "object_relationships", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "object_relationships", "Adding");
     }
 }

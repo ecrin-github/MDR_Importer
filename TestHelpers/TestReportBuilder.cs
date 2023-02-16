@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Dapper;
-using Microsoft.Extensions.Configuration;
+﻿using Dapper;
 using Npgsql;
-
 namespace MDR_Importer;
 
 class TestReportBuilder
@@ -24,29 +19,18 @@ class TestReportBuilder
     {
         _dbConn = dbConn;
 
-        // set up report file
+        // set up report file.
+        
         _reporter = new TestReportWriter();
-
-        IConfigurationRoot settings = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json")
-            .Build();
-        string logfileStartOfPath = settings["logfilepath"]!;
-
-        _reporter.OpenLogFile(logfileStartOfPath!);
+        _reporter.OpenLogFile();
     }
 
 
     public int GetCount(string sqlString)
     {
-        int res = 0;
-        using (var conn = new NpgsqlConnection(_dbConn))
-        {
-            res = conn.ExecuteScalar<int>(sqlString);
-        }
-        return res;
+        using var conn = new NpgsqlConnection(_dbConn);
+        return conn.ExecuteScalar<int>(sqlString);
     }
-
 
 
     public void ExecuteSql(string sqlString)
@@ -130,7 +114,7 @@ class TestReportBuilder
         CompareAttributeNumbers("studies", "study_references");
         CompareAttributeNumbers("studies", "study_links");
         CompareAttributeNumbers("studies", "study_countries");
-        CompareAttributeNumbers("studies", "study_locationss");
+        CompareAttributeNumbers("studies", "study_locations");
         CompareAttributeNumbers("studies", "study_relationships");
     }
 
@@ -147,7 +131,7 @@ class TestReportBuilder
         CompareHashes("studies", "study_links", 18);
         CompareHashes("studies", "study_countries", 21);
         CompareHashes("studies", "study_locations", 20);
-        CompareHashes("studies", "study_relartionships", 16);
+        CompareHashes("studies", "study_relationships", 16);
     }
 */
 
@@ -269,18 +253,13 @@ class TestReportBuilder
         _reporter.LogHeader("Comparing Attribute Numbers in " + table);
     }
 
-    private void DoHashComparisonHeader(string table)
-    {
-        _reporter.LogHeader("Comparing Hash values for " + table);
-    }
-
     private void DoComparisonFooter()
     {
         _reporter.BlankLine();
     }
 
 
-    private void CompareFields(string table, string field, string fieldtype)
+    private void CompareFields(string table, string field, string field_type)
     {
         int total = table == "studies" ? _totalStudies : _totalObjects;
 
@@ -303,7 +282,7 @@ class TestReportBuilder
                 string list_header = (n == 1) ? "Unmatched record:" : "Unmatched records:";
                 _reporter.LogSimpleLine(list_header);
                 _reporter.BlankLine();
-                WriteOutNonMatchingValues(table, field, fieldtype, "n");
+                WriteOutNonMatchingValues(table, field, field_type, "n");
             }
 
             if (en > 0)
@@ -313,7 +292,7 @@ class TestReportBuilder
                 list_header += (n == 1) ? "record:" : "records:";
                 _reporter.LogSimpleLine(list_header);
                 _reporter.BlankLine();
-                WriteOutNonMatchingValues(table, field, fieldtype, "en");
+                WriteOutNonMatchingValues(table, field, field_type, "en");
             }
 
             if (an > 0)
@@ -323,7 +302,7 @@ class TestReportBuilder
                 list_header += (n == 1) ? "record:" : "records:";
                 _reporter.LogSimpleLine(list_header);
                 _reporter.BlankLine();
-                WriteOutNonMatchingValues(table, field, fieldtype, "an");
+                WriteOutNonMatchingValues(table, field, field_type, "an");
             }
         }
 
@@ -391,7 +370,7 @@ class TestReportBuilder
         and a." + field + " is not null;";
 
         int en = GetCount(_sqlString);
-        _reporter.LogLine("Number of unmatched nulls in expected: " + en.ToString());
+        _reporter.LogLine("Number of unmatched nulls in expected: " + en);
         return en;
     }
 
@@ -414,10 +393,10 @@ class TestReportBuilder
 
     private void CompareAttributeNumbers(string main_table, string table)
     {
-        string sdid = main_table == "studies" ? "sd_sid" : "sd_oid";
+        // string sdid = main_table == "studies" ? "sd_sid" : "sd_oid";
 
         DoAttributeComparisonHeader(table);
-        int m = GetMatchingAttributeNumbers(main_table, table);
+        // int m = GetMatchingAttributeNumbers(main_table, table);
 
         int n = GetNonMatchingAttributeNumbers(main_table, table);
         if (n > 0)
@@ -432,24 +411,24 @@ class TestReportBuilder
         if (e > 0)
         {
             _reporter.BlankLine();
-            string list_header = (e == 1) ? "Entity " : "Entities ";
-            list_header += "with attributes in expected data only:";
+            // string list_header = (e == 1) ? "Entity " : "Entities ";
+            // list_header += "with attributes in expected data only:";
             _reporter.LogSimpleLine("Non matching details");
             _reporter.BlankLine();
-            WriteOutAttributesinExpectedDataOnly(main_table, table);
+            WriteOutAttributesInExpectedDataOnly(main_table, table);
         }
 
         int a = GetActualOnlyAttributeNumbers(main_table, table);
         if (a > 0)
         {
             _reporter.BlankLine();
-            string list_header = (a == 1) ? "Entity " : "Entities ";
-            list_header += "with attributes in actual data only:";
+            // string list_header = (a == 1) ? "Entity " : "Entities ";
+            // list_header += "with attributes in actual data only:";
             _reporter.LogSimpleLine("Non matching details");
             _reporter.BlankLine();
-            WriteOutAttributesinActualDataOnly(main_table, table);
+            WriteOutAttributesInActualDataOnly(main_table, table);
         }
-        int b = GetNumbersWhereNoAttributes(main_table, table);
+        // int b = GetNumbersWhereNoAttributes(main_table, table);
 
         if (n == 0 && a == 0 && e == 0)
         {
@@ -459,7 +438,7 @@ class TestReportBuilder
         DoComparisonFooter();
     }
 
-
+/*
     private int GetMatchingAttributeNumbers(string main_table, string table)
     {
         string sdid = main_table == "studies" ? "sd_sid" : "sd_oid";
@@ -479,7 +458,8 @@ class TestReportBuilder
         _reporter.LogLine("Number of matching attribute numbers: " + m.ToString());
         return m;
     }
-
+*/
+    
     private int GetNonMatchingAttributeNumbers(string main_table, string table)
     {
         string sdid = main_table == "studies" ? "sd_sid" : "sd_oid";
@@ -539,13 +519,13 @@ class TestReportBuilder
         _reporter.LogLine("Numbers with attributes only in actual data: " + a.ToString());
         return a;
     }
-
+/*
     private int GetNumbersWhereNoAttributes(string main_table, string table)
     {
         string sdid = main_table == "studies" ? "sd_sid" : "sd_oid";
 
         _sqlString = @"select count(*) from 
-        (select am." + sdid + @", count(t.id) as anum 
+        (select am." + sdid + @", count(t.id) as a_num 
          from adcomp." + main_table + @" am left join adcomp." + table + @" t 
          on am." + sdid + @" = t." + sdid + @"
          where am." + sdid + @" is not null
@@ -557,12 +537,13 @@ class TestReportBuilder
          where em." + sdid + @" is not null
 	     group by em." + sdid + @") e
          on a." + sdid + @" = e." + sdid + @"
-         where anum = 0 and enum = 0;";
+         where a_num = 0 and enum = 0;";
 
         int a = GetCount(_sqlString);
         _reporter.LogLine("Numbers with no attributes of this type in expected and actual: " + a.ToString());
         return a;
     }
+*/
 
     private void WriteOutAttributesWithNonMatchingValues(string main_table, string table)
     {
@@ -596,7 +577,7 @@ class TestReportBuilder
         WriteOutNonMatchingAttributes(_sqlString, main_table);
     }
 
-    private void WriteOutAttributesinExpectedDataOnly(string main_table, string table)
+    private void WriteOutAttributesInExpectedDataOnly(string main_table, string table)
     {
         if (main_table == "studies")
         {
@@ -629,7 +610,7 @@ class TestReportBuilder
         WriteOutAttributesOnlyInOneDataset(_sqlString, main_table);
     }
 
-    private void WriteOutAttributesinActualDataOnly(string main_table, string table)
+    private void WriteOutAttributesInActualDataOnly(string main_table, string table)
     {
         if (main_table == "studies")
         {
@@ -943,19 +924,6 @@ class TestReportBuilder
         public int? number { get; set; }
     }
 
-    private class HashValue
-    {
-        public string? id { get; set; }
-        public string? expected { get; set; }
-        public string? actual { get; set; }
-    }
-
-    private class SingleHashValue
-    {
-        public string? id { get; set; }
-        public string? hash { get; set; }
-    }
-
     private class ObjAttNum
     {
         public string? id { get; set; }
@@ -971,23 +939,7 @@ class TestReportBuilder
         public int? number { get; set; }
     }
 
-    private class ObjHashValue
-    {
-        public string? id { get; set; }
-        public string? oid { get; set; }
-        public string? expected { get; set; }
-        public string? actual { get; set; }
-    }
-
-    private class ObjSingleHashValue
-    {
-        public string? id { get; set; }
-        public string? oid { get; set; }
-        public string? hash { get; set; }
-    }
-
-
-    private string ObtainSQLForNonMatchingValues(string table, string field, string fieldtype, string comptype)
+    private string ObtainSQLForNonMatchingValues(string table, string field, string field_type, string comp_type)
     {
         string sdid = table == "studies" ? "sd_sid" : "sd_oid";
 
@@ -995,15 +947,15 @@ class TestReportBuilder
                               ? "select a.sd_sid as id, "
                               : "select a.sd_sid as id, a.sd_oid as oid,";
 
-        if (fieldtype == "string")
+        if (field_type == "string")
         {
             sql_string += "e." + field + " as expected, a." + field + " as actual ";
         }
-        else if (fieldtype == "int" || fieldtype == "date")
+        else if (field_type == "int" || field_type == "date")
         {
             sql_string += "cast(e." + field + " as varchar) as expected, cast(a." + field + " as varchar) as actual ";
         }
-        else if (fieldtype == "boolean")
+        else if (field_type == "boolean")
         {
             sql_string += @" case
                               when e." + field + @" = true then 'true' 
@@ -1020,15 +972,15 @@ class TestReportBuilder
             inner join adcomp." + table + @" a
             on e." + sdid + @" = a." + sdid;
 
-        if (comptype == "n")
+        if (comp_type == "n")
         {
             sql_string += " where e." + field + " <> a." + field + "; ";
         }
-        else if (comptype == "en")
+        else if (comp_type == "en")
         {
             sql_string += "  where e." + field + " IS DISTINCT FROM a." + field + " and e. " + field + " is null;";
         }
-        else if (comptype == "an")
+        else if (comp_type == "an")
         {
             sql_string += "  where e." + field + " IS DISTINCT FROM a." + field + " and a. " + field + " is null;";
         }
@@ -1037,125 +989,118 @@ class TestReportBuilder
     }
 
 
-    private void WriteOutNonMatchingValues(string table, string field, string fieldtype, string comptype)
+    private void WriteOutNonMatchingValues(string table, string field, string field_type, string comp_type)
     {
         // should log out the 'offending' records
-        // into a simple object (but object defn will depend on field type)
+        // into a simple object (but object definition will depend on field type)
 
-        _sqlString = ObtainSQLForNonMatchingValues(table, field, fieldtype, comptype);
-        using (var conn = new NpgsqlConnection(_dbConn))
+        _sqlString = ObtainSQLForNonMatchingValues(table, field, field_type, comp_type);
+        using var conn = new NpgsqlConnection(_dbConn);
+        int res_count;
+        if (table == "studies")
         {
-            int res_count = 0;
-            if (table == "studies")
+            List<DBValue> res = conn.Query<DBValue>(_sqlString).ToList();
+            res_count = res.Count;
+            if (res_count > 0)
             {
-                List<DBValue> res = conn.Query<DBValue>(_sqlString).ToList();
-                res_count = res.Count;
-                if (res_count > 0)
+                foreach (DBValue v in res)
                 {
-                    foreach (DBValue v in res)
-                    {
-                        _reporter.LogSimpleLine("id: " + v.id + ", \nexpected: " + v.expected
-                                          + ", \nactual: " + v.actual + "\n");
-                    }
+                    _reporter.LogSimpleLine("id: " + v.id + ", \nexpected: " + v.expected
+                                            + ", \nactual: " + v.actual + "\n");
                 }
-            }
-            else
-            {
-                List<DBObjValue> res = conn.Query<DBObjValue>(_sqlString).ToList();
-                res_count = res.Count;
-                if (res_count > 0)
-                {
-                    foreach (DBObjValue v in res)
-                    {
-                        _reporter.LogSimpleLine("id: " + v.id + ", \noid: " + v.oid
-                                          + ", \nexpected: " + v.expected
-                                          + ", \nactual: " + v.actual + "\n");
-                    }
-                }
-            }
-            if (res_count == 0)
-            {
-                _reporter.LogSimpleLine("Odd - could not find the non-matching records in the DB");
             }
         }
-
+        else
+        {
+            List<DBObjValue> res = conn.Query<DBObjValue>(_sqlString).ToList();
+            res_count = res.Count;
+            if (res_count > 0)
+            {
+                foreach (DBObjValue v in res)
+                {
+                    _reporter.LogSimpleLine("id: " + v.id + ", \noid: " + v.oid
+                                            + ", \nexpected: " + v.expected
+                                            + ", \nactual: " + v.actual + "\n");
+                }
+            }
+        }
+        if (res_count == 0)
+        {
+            _reporter.LogSimpleLine("Odd - could not find the non-matching records in the DB");
+        }
     }
 
     private void WriteOutNonMatchingAttributes(string sql_string, string main_table)
     {
-        using (var conn = new NpgsqlConnection(_dbConn))
+        using var conn = new NpgsqlConnection(_dbConn);
+        int res_count;
+        if (main_table == "studies")
         {
-            int res_count = 0;
-            if (main_table == "studies")
+            List<AttNum> res = conn.Query<AttNum>(sql_string).ToList();
+            res_count = res.Count;
+            if (res.Count > 0)
             {
-                List<AttNum> res = conn.Query<AttNum>(sql_string).ToList();
-                res_count = res.Count;
-                if (res.Count > 0)
+                foreach (AttNum v in res)
                 {
-                    foreach (AttNum v in res)
-                    {
-                        _reporter.LogSimpleLine("id: " + v.id + ", expected: " + v.expected
-                                          + ", actual: " + v.actual + "\n");
-                    }
+                    _reporter.LogSimpleLine("id: " + v.id + ", expected: " + v.expected
+                                            + ", actual: " + v.actual + "\n");
                 }
             }
-            else
+        }
+        else
+        {
+            List<ObjAttNum> res = conn.Query<ObjAttNum>(sql_string).ToList();
+            res_count = res.Count;
+            if (res_count > 0)
             {
-                List<ObjAttNum> res = conn.Query<ObjAttNum>(sql_string).ToList();
-                res_count = res.Count;
-                if (res_count > 0)
+                foreach (ObjAttNum v in res)
                 {
-                    foreach (ObjAttNum v in res)
-                    {
-                        _reporter.LogSimpleLine("id: " + v.id + "\noid: " + v.oid + ", expected: " + v.expected
-                                          + ", actual: " + v.actual + "\n");
-                    }
+                    _reporter.LogSimpleLine("id: " + v.id + "\noid: " + v.oid + ", expected: " + v.expected
+                                            + ", actual: " + v.actual + "\n");
                 }
             }
-            if (res_count == 0)
-            {
-                _reporter.LogSimpleLine("Odd - could not find the non-matching records in the DB");
-            }
+        }
+        if (res_count == 0)
+        {
+            _reporter.LogSimpleLine("Odd - could not find the non-matching records in the DB");
         }
     }
 
     private void WriteOutAttributesOnlyInOneDataset(string sql_string, string main_table)
     {
-        using (var conn = new NpgsqlConnection(_dbConn))
+        using var conn = new NpgsqlConnection(_dbConn);
+        int res_count;
+        if (main_table == "studies")
         {
-            int res_count = 0;
-            if (main_table == "studies")
+            List<SingleAttNum> res = conn.Query<SingleAttNum>(sql_string).ToList();
+            res_count = res.Count;
+            if (res_count > 0)
             {
-                List<SingleAttNum> res = conn.Query<SingleAttNum>(sql_string).ToList();
-                res_count = res.Count;
-                if (res_count > 0)
+                foreach (SingleAttNum v in res)
                 {
-                    foreach (SingleAttNum v in res)
-                    {
-                        _reporter.LogSimpleLine("id: " + v.id + ", number: " + v.number + "\n");
-                    }
+                    _reporter.LogSimpleLine("id: " + v.id + ", number: " + v.number + "\n");
                 }
             }
-            else
+        }
+        else
+        {
+            List<ObjSingleAttNum> res = conn.Query<ObjSingleAttNum>(sql_string).ToList();
+            res_count = res.Count;
+            if (res_count > 0)
             {
-                List<ObjSingleAttNum> res = conn.Query<ObjSingleAttNum>(sql_string).ToList();
-                res_count = res.Count;
-                if (res_count > 0)
-                {
-                    foreach (ObjSingleAttNum v in res)
-                    { 
-                        _reporter.LogSimpleLine("id: " + v.id + "\noid: " + v.oid + ", number: " + v.number + "\n");
-                    }
+                foreach (ObjSingleAttNum v in res)
+                { 
+                    _reporter.LogSimpleLine("id: " + v.id + "\noid: " + v.oid + ", number: " + v.number + "\n");
                 }
             }
-            if (res_count == 0)
-            {
-                _reporter.LogSimpleLine("Odd - could not find the non-matching records in the DB");
-            }
+        }
+        if (res_count == 0)
+        {
+            _reporter.LogSimpleLine("Odd - could not find the non-matching records in the DB");
         }
     }
 
-
+/*
     private void WriteOutNonMatchingHashes(string sql_string, string main_table)
     {
         using (var conn = new NpgsqlConnection(_dbConn))
@@ -1193,41 +1138,6 @@ class TestReportBuilder
             }
         }
     }
-
-    private void WriteOutHashesOnlyInOneDataset(string sql_string, string main_table)
-    {
-        using (var conn = new NpgsqlConnection(_dbConn))
-        {
-            int res_count = 0;
-            if (main_table == "studies")
-            {
-                List<SingleHashValue> res = conn.Query<SingleHashValue>(sql_string).ToList();
-                res_count = res.Count;
-                if (res_count > 0)
-                {
-                    foreach (SingleHashValue v in res)
-                    {
-                        _reporter.LogSimpleLine("id: " + v.id + ", number: " + v.hash + "\n");
-                    }
-                }
-            }
-            else
-            { 
-                List<ObjSingleHashValue> res = conn.Query<ObjSingleHashValue>(sql_string).ToList();
-                res_count = res.Count;
-                if (res_count > 0)
-                {
-                    foreach (ObjSingleHashValue v in res)
-                    {
-                        _reporter.LogSimpleLine("id: " + v.id + "\noid: " + v.oid + ", number: " + v.hash + "\n");
-                    }
-                }
-            }
-            if (res_count == 0)
-            {
-                _reporter.LogSimpleLine("Odd - could not find the non-matching records in the DB");
-            }
-        }
-    }
+*/
 
 }

@@ -7,18 +7,18 @@ class ImportTableManager
 {
     private readonly Source _source;
     private readonly ILoggingHelper _loggingHelper;
-    private readonly string _connString;
+    private readonly string _db_conn;
 
     public ImportTableManager(Source source, ILoggingHelper loggingHelper)
     {
         _source = source;
-        _connString = source.db_conn ?? "";
+        _db_conn = source.db_conn ?? "";
         _loggingHelper = loggingHelper;       
     }
     
     public void ExecuteSQL(string sql_string)
     {
-        using var conn = new NpgsqlConnection(_connString);
+        using var conn = new NpgsqlConnection(_db_conn);
         conn.Execute(sql_string);
 
     }
@@ -113,7 +113,7 @@ class ImportTableManager
     {
         string sql_string = @"SELECT count(*) FROM sd." + table_name + 
                             " WHERE status = " + status.ToString();
-        using var Conn = new NpgsqlConnection(_connString);
+        using var Conn = new NpgsqlConnection(_db_conn);
         return Conn.ExecuteScalar<int>(sql_string);
     }
 }
