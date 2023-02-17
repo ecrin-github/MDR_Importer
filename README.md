@@ -20,13 +20,14 @@ The system can take the following parameters:<br/>
 Routine usage, as in the scheduled extraction process, is to use -s followed by a list of one or more source ids.<br/>
 Using the -T flag will result n the ad tables being replaced by the sd tables. It therefore only makes if the preceding harvest has been a 'full' harvest, of all available json source files.
 
-### Dependencies
-The program used the Nuget packages:
-* CommandLineParser - to carry out initial processing of the CLI arguments
-* Npgsql, Dapper and Dapper.contrib to handle database connectivity
-* Microsoft.Extensions.Configuration, .Configuration.Json, and .Hosting to read the json settings file and support the initial host setup.
+## Dependencies
+The program is written in .Net 7.0. <br/>
+It uses the following Nuget packages:
+* CommandLineParser 2.9.1 - to carry out initial processing of the CLI arguments
+* Npgsql 7.0.0, Dapper 2.0.123 and Dapper.contrib 2.0.78 to handle database connectivity
+* Microsoft.Extensions.Configuration 7.0.0, .Configuration.Json 7.0.0 and .Hosting 7.0.0 to read the json settings file and support the initial application setup.
 
-### Provenance
+## Provenance
 * Author: Steve Canham
 * Organisation: ECRIN (https://ecrin.org)
 * System: Clinical Research Metadata Repository (MDR)
