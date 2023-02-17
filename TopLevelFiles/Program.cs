@@ -73,16 +73,17 @@ else
     try
     {
         var opts = paramsCheck.Pars!;
-        if (opts.UsingTestData is not true && opts.CreateTestReport is not true)
-        {
-            Importer importer = new(monDataLayer, loggingHelper);
-            importer.Run(opts);
-        }
-        else
+        if (opts.UsingTestData || opts.CreateTestReport)
         {
             TestImporter testImporter = new(monDataLayer, testDataLayer, loggingHelper);
             testImporter.Run(opts);
         }
+        else
+        {
+            Importer importer = new(monDataLayer, loggingHelper);
+            importer.Run(opts);
+        }
+        
         return 0;
     }
     catch (Exception e)

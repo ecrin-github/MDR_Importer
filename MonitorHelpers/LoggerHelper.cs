@@ -74,7 +74,7 @@ public class LoggingHelper : ILoggingHelper
 
     public void LogStudyHeader(Options opts, string dbLine)
     {
-        string dividerLine = opts.UsingTestData is true ? new string('-', 70) : new string('=', 70);
+        string dividerLine = opts.UsingTestData ? new string('-', 70) : new string('=', 70);
         LogLine("");
         LogLine(dividerLine);
         LogLine(dbLine);

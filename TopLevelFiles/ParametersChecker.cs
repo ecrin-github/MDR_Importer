@@ -46,39 +46,37 @@ internal class ParameterChecker
             // the set of correct source ids must be created. 
             // If just doing a test result the program can be run in any case.
             
-            if (opts.UsingTestData is true)
+            if (opts.UsingTestData)
             {
                 opts.SourceIds = _testRepo.ObtainTestSourceIDs();
                 return new ParamsCheckResult(false, false, opts); 
             }
-            else if (opts.CreateTestReport is true)
+            
+            if (opts.CreateTestReport)
             {
                 return new ParamsCheckResult(false, false, opts);    
             }
-            else
+            
+            // if a non test import there has to be some
+            // sources identified, and they all have to be valid.
+            
+            if (opts.SourceIds?.Any() is not true)
             {
-                // if a non test import there has to be some
-                // sources identified, and they all have to be valid.
-                
-                if (opts.SourceIds?.Any() is not true)
-                {
-                    throw new ArgumentException("No source id provided");
-                }
-
-                foreach (int sourceId in opts.SourceIds)
-                {
-                    if (!_monDataLayer.SourceIdPresent(sourceId))
-                    {
-                        throw new ArgumentException("Source argument " + sourceId +
-                                                    " does not correspond to a known source");
-                    }
-                }
-
-                // If reached here parameters are valid - return opts.
-
-                return new ParamsCheckResult(false, false, opts);
+                throw new ArgumentException("No source id provided");
             }
 
+            foreach (int sourceId in opts.SourceIds)
+            {
+                if (!_monDataLayer.SourceIdPresent(sourceId))
+                {
+                    throw new ArgumentException("Source argument " + sourceId +
+                                                " does not correspond to a known source");
+                }
+            }
+
+            // If reached here parameters are valid - return opts.
+
+            return new ParamsCheckResult(false, false, opts);
         }
 
 
@@ -134,13 +132,13 @@ public class Options
     public IEnumerable<int>? SourceIds { get; set; }
 
     [Option('T', "build tables", Required = false, HelpText = "If present, forces the (re)creation of a new set of ad tables")]
-    public bool? RebuildAdTables { get; set; }
+    public bool RebuildAdTables { get; set; }
 
     [Option('F', "is a test", Required = false, HelpText = "If present, operates on the sd / ad tables in the test database")]
-    public bool? UsingTestData { get; set; }
+    public bool UsingTestData { get; set; }
 
     [Option('G', "test report", Required = false, HelpText = "If present, compares and reports on adcomp and expected tables but does not recreate those tables")]
-    public bool? CreateTestReport { get; set; }
+    public bool CreateTestReport { get; set; }
 }
 
 
