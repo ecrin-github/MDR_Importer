@@ -13,7 +13,7 @@ and linked pages.
 
 ## Parameters and Usage
 The system can take the following parameters:<br/>
-**-s:** expects to be followed by a comma separated list of MDR source integer ids, each representing a data source within the system.<br/>
+**-s:** expects to be followed by a comma separated list of MDR source integer ids, each representing a data source within the system. The data for ech surce is imported.<br/>
 **-T:** as a flag. If present, forces the (re)creation of a new set of ad tables.<br/>
 **-F:** as a flag. If present, operates on the sd / ad tables in the test database.<br/>
 **-G:** as a flag. If present, compares and reports on adcomp and expected tables but does not recreate those tables. Often used in conjunction with -F.<br/>
