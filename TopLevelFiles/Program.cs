@@ -62,39 +62,38 @@ if (paramsCheck.ParseError || paramsCheck.ValidityError)
 
     return -1;
 }
-else
+
+// Should be able to proceed - opts and source(s) are known to be non-null.
+// For a normal run, create an Importer class and run the import process.
+// For a test run, create a test importer, which uses exactly the same code
+// but which needs to establish a framework for the test data first, and then
+// compare it with expected data afterwards.
+
+try
 {
-    // Should be able to proceed - opts and source(s) are known to be non-null.
-    // For a normal run, create an Importer class and run the import process.
-    // For a test run, create a test importer, which uses exactly the same code
-    // but which needs to establish a framework for the test data first, and then
-    // compare it with expected data afterwards.
-
-    try
+    var opts = paramsCheck.Pars!;
+    if (opts.UsingTestData || opts.CreateTestReport)
     {
-        var opts = paramsCheck.Pars!;
-        if (opts.UsingTestData || opts.CreateTestReport)
-        {
-            TestImporter testImporter = new(monDataLayer, testDataLayer, loggingHelper);
-            testImporter.Run(opts);
-        }
-        else
-        {
-            Importer importer = new(monDataLayer, loggingHelper);
-            importer.Run(opts);
-        }
-        
-        return 0;
+        TestImporter testImporter = new(monDataLayer, testDataLayer, loggingHelper);
+        testImporter.Run(opts);
     }
-    catch (Exception e)
+    else
     {
-        // If an error bubbles up to here there is an unexpected issue with the code.
-        // A file should normally have been created (but just in case...).
-
-        loggingHelper.LogHeader("UNHANDLED EXCEPTION");
-        loggingHelper.LogCodeError("MDR_Importer application aborted", e.Message, e.StackTrace);
-        loggingHelper.CloseLog();
-        return -1;
+        Importer importer = new(monDataLayer, loggingHelper);
+        importer.Run(opts);
     }
+    
+    return 0;
 }
+catch (Exception e)
+{
+    // If an error bubbles up to here there is an unexpected issue with the code.
+    // A file should normally have been created (but just in case...).
+
+    loggingHelper.LogHeader("UNHANDLED EXCEPTION");
+    loggingHelper.LogCodeError("MDR_Importer application aborted", e.Message, e.StackTrace);
+    loggingHelper.CloseLog();
+    return -1;
+}
+
 

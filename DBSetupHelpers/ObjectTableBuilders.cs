@@ -48,6 +48,7 @@ public class ObjectTableBuilders
           , add_study_topics       BOOLEAN         NULL
           , datetime_of_data_fetch TIMESTAMPTZ     NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
+          , coded_on               TIMESTAMPTZ     NULL   
         );    
         CREATE INDEX data_objects_sd_oid ON ad.data_objects(sd_oid);
         CREATE INDEX data_objects_sd_sid ON ad.data_objects(sd_sid);";
@@ -116,10 +117,11 @@ public class ObjectTableBuilders
         string sql_string = @"DROP TABLE IF EXISTS ad.object_instances;
         CREATE TABLE ad.object_instances(
             id                     INT             GENERATED ALWAYS AS IDENTITY PRIMARY KEY
-          , sd_oid                 VARCHAR        NULL
+          , sd_oid                 VARCHAR         NULL
           , instance_type_id       INT             NOT NULL  default 1
           , repository_org_id      INT             NULL
           , repository_org         VARCHAR         NULL
+          , repository_org_ror_id  VARCHAR         NULL
           , url                    VARCHAR         NULL
           , url_accessible         BOOLEAN         NULL
           , url_last_checked       DATE            NULL
@@ -355,6 +357,7 @@ public class ObjectTableBuilders
           , publisher              VARCHAR         NULL
           , publisher_suffix       VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
+          , coded_on               TIMESTAMPTZ     NULL   
         );
         CREATE INDEX journal_details_sd_oid ON ad.journal_details(sd_oid);";
 

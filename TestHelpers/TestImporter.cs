@@ -116,12 +116,9 @@ public class TestImporter
         _loggingHelper.LogHeader("Start Import Process");
         _loggingHelper.LogHeader("Create and fill diff tables");
         
-        ImportTableManager itm = new ImportTableManager(source, _loggingHelper);
+        DataTransferManager dtm = new DataTransferManager(source, _loggingHelper);
         _loggingHelper.LogLine("Foreign (mon) tables established in database");
         int importId = _monDataLayer.GetNextImportEventId();
-        itm.CreateImportTables();       
-        itm.FillImportTables();
-        _loggingHelper.LogDiffs(source);
 
         // Start the data transfer.
         // Consider matched studies and objects - delete these first from the 
@@ -129,21 +126,20 @@ public class TestImporter
         // sd data, matched and new, as new data.
         // (if rebuild all tables is true no need to delete any matched data first)
 
-        DataTransferManager dtm = new DataTransferManager(source, _loggingHelper);
        _loggingHelper.LogLine("Foreign (mon) tables established in database");     
 
         if (source.has_study_tables is true)
         {
             dtm.DeleteMatchedStudyData(importId);
         }
-        dtm.DeleteMatchedDataObjectData(importId);
+        dtm.DeleteMatchedObjectData(importId);
         _loggingHelper.LogHeader("Matched data deleted from ad tables");
         
         if (source.has_study_tables is true)
         {
-            dtm.AddStudies(importId);
+            dtm.AddStudyData(importId);
         }
-        dtm.AddDataObjects(importId);
+        dtm.AddObjectData(importId);
         _loggingHelper.LogHeader("New data added to ad tables");
 
         // Copy ad data from ad tables to the compad tables...

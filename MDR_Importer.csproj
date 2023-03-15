@@ -22,6 +22,14 @@
     <Compile Remove="TopLevelFiles\Interfaces\IImporter.cs" />
     <Compile Remove="MonitorHelpers\Interfaces\ISource.cs" />
     <Compile Remove="DataHelpers\ImportHelper.cs" />
+    <Compile Remove="DataTransferHelpers\ObjectDataDeleter.cs" />
+    <Compile Remove="DataTransferHelpers\ImportTableManager.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

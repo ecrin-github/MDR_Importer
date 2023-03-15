@@ -225,20 +225,10 @@ public class LoggingHelper : ILoggingHelper
         LogLine("");
         if (s.has_study_tables is true)
         {
-            LogLine(GetTableRecordCount(dbConn, "to_ad_study_recs"));
-            LogLine(GetEntityRecDiffs(dbConn, "study"));
-            GetStudyStats(dbConn, "recs");
-            LogLine(GetTableRecordCount(dbConn, "to_ad_study_atts"));
-            GetStudyStats(dbConn, "atts");
+            LogLine(GetTableRecordCount(dbConn, "study_recs"));
         }
-
-        LogLine(GetTableRecordCount(dbConn, "to_ad_object_recs"));
-        LogLine(GetEntityRecDiffs(dbConn, "object"));
-        LogLine(GetDatasetRecDiffs(dbConn));
-
-        GetObjectStats(dbConn, "recs");
-        LogLine(GetTableRecordCount(dbConn, "to_ad_object_atts"));
-        GetObjectStats(dbConn, "atts");
+        LogLine(GetTableRecordCount(dbConn, "object_recs"));
+        
     }
 
     

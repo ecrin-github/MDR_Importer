@@ -57,48 +57,42 @@ public class Importer
         // Recreate ad tables if necessary.
 
         _loggingHelper.LogHeader("Setup");
-        if (opts.RebuildAdTables is true)
+        if (opts.RebuildAdTables)
         {
             AdBuilder adb = new AdBuilder(source, _loggingHelper);
             adb.BuildNewAdTables();
         }
         
-        // Create import event log record.
-        // Create and fill temporary tables to hold ids and statuses  
-        // of new or matched sd studies and sd data objects.
-
-        _loggingHelper.LogHeader("Start Import Process");
-        _loggingHelper.LogHeader("Create and fill status tables");
- 
-        ImportTableManager itm = new ImportTableManager(source, _loggingHelper);
-        int importId = _monDataLayer.GetNextImportEventId();
-        ImportEvent import = itm.CreateImportEvent(importId);        
-        itm.CreateImportTables();       
-        itm.FillImportTables();
-        _loggingHelper.LogDiffs(source);
-
         // Start the data transfer.
+        // Create import event log record.
         // Consider matched studies and objects - delete these first from the 
         // ad tables, re-assign ids on the ad tables, and then add ALL the 
         // sd data, matched and new, as new data.
-        // (if rebuild all tables is true no need to delete any matched data first)
-   
-        DataTransferManager dtm = new DataTransferManager(source, _loggingHelper);
-        dtm.EstablishForeignMonTables(_monDataLayer.Credentials);
-        _loggingHelper.LogLine("Foreign (mon) tables established in database");     
-                
-        if (source.has_study_tables is true)
-        {
-            dtm.DeleteMatchedStudyData(importId);
-        }
-        dtm.DeleteMatchedDataObjectData(importId);
-        _loggingHelper.LogHeader("Matched data deleted from ad tables");
+        // (if rebuild all tables is true no need to delete any matched data first).
         
+        _loggingHelper.LogHeader("Start Import Process");
+ 
+        DataTransferManager dtm = new DataTransferManager(source, _loggingHelper);
+        int importId = _monDataLayer.GetNextImportEventId();
+        ImportEvent import = dtm.CreateImportEvent(importId);        
+        dtm.EstablishForeignMonTables(_monDataLayer.Credentials);
+        _loggingHelper.LogLine("Foreign (mon) tables established in database");
+
+        if (!opts.RebuildAdTables)
+        {
+            if (source.has_study_tables is true)
+            {
+                dtm.DeleteMatchedStudyData(importId);
+            }
+            dtm.DeleteMatchedObjectData(importId);
+            _loggingHelper.LogHeader("Matched data deleted from ad tables");
+        }
+       
         if (source.has_study_tables is true)
         {
-            dtm.AddStudies(importId);
+            dtm.AddStudyData(importId);
         }
-        dtm.AddDataObjects(importId);
+        dtm.AddObjectData(importId);
         _loggingHelper.LogHeader("New data added to ad tables");
 
         // Tidy up - Update the 'date imported' record in the
