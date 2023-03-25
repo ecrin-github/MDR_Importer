@@ -197,8 +197,8 @@ public class StudyTableBuilders
 
     public void create_table_study_conditions()
     {
-        string sql_string = @"DROP TABLE IF EXISTS sd.study_conditions;
-        CREATE TABLE sd.study_conditions(
+        string sql_string = @"DROP TABLE IF EXISTS ad.study_conditions;
+        CREATE TABLE ad.study_conditions(
             id                     INT             GENERATED ALWAYS AS IDENTITY PRIMARY KEY
           , sd_sid                 VARCHAR         NOT NULL
           , original_value         VARCHAR         NULL
@@ -209,7 +209,7 @@ public class StudyTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL
         );
-        CREATE INDEX study_conditions_sd_sid ON sd.study_conditions(sd_sid);";
+        CREATE INDEX study_conditions_sd_sid ON ad.study_conditions(sd_sid);";
 
         Execute_SQL(sql_string);
     }
@@ -335,7 +335,7 @@ public class StudyTableBuilders
     
     public void create_table_study_iec_by_year_groups()
     {
-        create_iec_table("study_iec_pre12");
+        create_iec_table("study_iec_upto12");
         create_iec_table("study_iec_13to19");
         create_iec_table("study_iec_20on");
     }

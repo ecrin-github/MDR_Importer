@@ -26,9 +26,5 @@ public interface IMonDataLayer
     int StoreImportEvent(ImportEvent import);
     bool CheckIfFullHarvest(int? source_id);
 
-    void UpdateStudiesLastImportedDate(int import_id, int? source_id);
-
-    void UpdateObjectsLastImportedDate(int import_id, int? source_id);
-    // void LogDiffs(ISource s);
 }
 

@@ -60,7 +60,7 @@ class DataDeleter
         deident_dates, deident_nonarr, deident_kanon, deident_details,
         consent_type_id, consent_noncommercial, consent_geog_restrict,
         consent_research_type, consent_genetic_only, consent_no_methods, consent_details, added_on" },
-        { "object_instances", @"sd_oid, instance_type_id, repository_org_id, repository_org,
+        { "object_instances", @"sd_oid, repository_org_id, repository_org,
         repository_org_ror_id, url, url_accessible, url_last_checked, resource_type_id,
         resource_size, resource_size_units, resource_comments, added_on, coded_on " },
         { "object_titles", @"sd_oid, title_type_id, title_text, lang_code,
@@ -84,28 +84,30 @@ class DataDeleter
         { "object_relationships", @"sd_oid, relationship_type_id, target_sd_oid, added_on" }
     };
     
-    public void DeleteStudyRecords(string table_name)
+    public int DeleteStudyRecords(string table_name)
     {
         string sql_string = $@"delete from ad.{table_name} a
-          using sd.studies t
-          where a.sd_sid = t.sd_sid;";
+             using sd.studies t
+             where a.sd_sid = t.sd_sid;";
 
         using var conn = new NpgsqlConnection(_db_conn);
         int res = conn.Execute(sql_string);
         _logging_helper.LogLine($"Deleted {res} from ad.{table_name}");
         CompactSequence(table_name, studyFields[table_name]);
+        return res;
     }
     
-    public void DeleteObjectRecords(string table_name)
+    public int DeleteObjectRecords(string table_name)
     {
         string sql_string = $@"delete from ad.{table_name} a
-          using sd.data_objects t
-          where a.sd_oid = t.sd_oid;";
+             using sd.data_objects t
+             where a.sd_oid = t.sd_oid;";
 
         using var conn = new NpgsqlConnection(_db_conn);
         int res = conn.Execute(sql_string);
         _logging_helper.LogLine($"Deleted {res} from ad.{table_name}");
         CompactSequence(table_name, objectFields[table_name]);
+        return res;
 
     }
 

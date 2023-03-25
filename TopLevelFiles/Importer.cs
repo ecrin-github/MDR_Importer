@@ -34,11 +34,8 @@ public class Importer
                 
                 ImportData(source, opts);
                 
-                //_loggingHelper.LogImportSummary(source);
                 _loggingHelper.CloseLog();
             }
-
-            _loggingHelper.CloseLog();
         }
 
         catch (Exception e)
@@ -64,27 +61,28 @@ public class Importer
         }
         
         // Start the data transfer.
-        // Create import event log record.
+        // Establish monitoring schema as foreign tables and 
+        // create import event log record.
         // Consider matched studies and objects - delete these first from the 
         // ad tables, re-assign ids on the ad tables, and then add ALL the 
         // sd data, matched and new, as new data.
         // (if rebuild all tables is true no need to delete any matched data first).
         
         _loggingHelper.LogHeader("Start Import Process");
- 
+        ForeignTableManager ftm = new ForeignTableManager(source, _loggingHelper);
+        ftm.EstablishForeignMonTables(_monDataLayer.Credentials);
+
         DataTransferManager dtm = new DataTransferManager(source, _loggingHelper);
         int importId = _monDataLayer.GetNextImportEventId();
-        ImportEvent import = dtm.CreateImportEvent(importId);        
-        dtm.EstablishForeignMonTables(_monDataLayer.Credentials);
-        _loggingHelper.LogLine("Foreign (mon) tables established in database");
-
+        ImportEvent import = dtm.CreateImportEvent(importId, opts.RebuildAdTables);        
+        
         if (!opts.RebuildAdTables)
         {
             if (source.has_study_tables is true)
             {
-                dtm.DeleteMatchedStudyData(importId);
+                import.num_matched_studies = dtm.DeleteMatchedStudyData(importId);
             }
-            dtm.DeleteMatchedObjectData(importId);
+            import.num_matched_objects = dtm.DeleteMatchedObjectData(importId);
             _loggingHelper.LogHeader("Matched data deleted from ad tables");
         }
        
@@ -97,22 +95,20 @@ public class Importer
 
         // Tidy up - Update the 'date imported' record in the
         // mon.source data tables. Remove foreign tables
-        // Store import event for non-test imports.      
+        // Store import event.      
         
         _loggingHelper.LogHeader("Tidy up and finish");
         if (source.has_study_tables is true)
         {
-            _monDataLayer.UpdateStudiesLastImportedDate(importId, source.id);
+            ftm.UpdateStudiesImportedDateInMon(importId, source.id);
         }
         else
         {
             // only do the objects table if there are no studies (e.g. PubMed)
-            _monDataLayer.UpdateObjectsLastImportedDate(importId, source.id);
+            ftm.UpdateObjectsImportedDateInMon(importId, source.id);
         }
-        dtm.DropForeignMonTables();
-        _loggingHelper.LogLine("Foreign (mon) tables removed from database");    
+        ftm.DropForeignMonTables();
         _monDataLayer.StoreImportEvent(import);
-
     } 
 }
 

@@ -143,7 +143,6 @@ public class MonDataLayer : IMonDataLayer
         return conn.Query<StudyFileRecord>(sqlString).FirstOrDefault();
     }
 
-
     public ObjectFileRecord? FetchObjectFileRecord(string sdId, int? sourceId, string sourceType)
     {
         using NpgsqlConnection conn = new(_db_conn);
@@ -152,7 +151,6 @@ public class MonDataLayer : IMonDataLayer
         sqlString += " where sd_id = '" + sdId + "' and source_id = " + sourceId.ToString();
         return conn.Query<ObjectFileRecord>(sqlString).FirstOrDefault();
     }
-
 
     public void UpdateFileRecLastImported(int id, string sourceType)
     {
@@ -164,7 +162,6 @@ public class MonDataLayer : IMonDataLayer
         conn.Execute(sqlString);
     }
 
-
     public int StoreImportEvent(ImportEvent import)
     {
         import.time_ended = DateTime.Now;
@@ -172,94 +169,16 @@ public class MonDataLayer : IMonDataLayer
         return (int)conn.Insert(import);
     }
 
-
     public bool CheckIfFullHarvest(int? sourceId)
     {
         string sqlString = $@"select type_id from sf.harvest_events
-                     where source_id = {sourceId} and time_ended = 
+                      where source_id = {sourceId} and time_ended = 
                           (select max(time_ended) from sf.harvest_events 
                            where source_id = {sourceId})";
 
         using NpgsqlConnection conn = new(_db_conn);
         int res = conn.ExecuteScalar<int>(sqlString);
         return (res == 1);   // harvest type 1 = all records
-    }
-    
-    
-    public void UpdateStudiesLastImportedDate(int importId, int? sourceId)
-    {
-        string top_string = @"Update mon_sf.source_data_studies src
-                      set last_import_id = " + importId.ToString() + @", 
-                      last_imported = current_timestamp
-                      from 
-                         (select so.id, so.sd_sid 
-                         FROM sd.studies so
-                         INNER JOIN sd.to_ad_study_recs ts
-                         ON so.sd_sid = ts.sd_sid
-                         where ts.status in (1, 2, 3) 
-                         ";
-        string base_string = @" ) s
-                          where s.sd_sid = src.sd_id and
-                          src.source_id = " + sourceId.ToString();
-
-        UpdateLastImportedDate("studies", top_string, base_string);
-    }
-
-    
-    public void UpdateObjectsLastImportedDate(int importId, int? sourceId)
-    {
-        string top_string = @"UPDATE mon_sf.source_data_objects src
-                      set last_import_id = " + importId.ToString() + @", 
-                      last_imported = current_timestamp
-                      from 
-                         (select so.id, so.sd_oid 
-                          FROM sd.data_objects so
-                          INNER JOIN sd.to_ad_object_recs ts
-                          ON so.sd_oid = ts.sd_oid
-                          where ts.status in (1, 2, 3) 
-                         ";
-        string base_string = @" ) s
-                          where s.sd_oid = src.sd_id and
-                          src.source_id = " + sourceId.ToString();
-
-        UpdateLastImportedDate("data_objects", top_string, base_string);
-    }
-
-
-    private void UpdateLastImportedDate(string tableName, string topSql, string baseSql)
-    {
-        try
-        {   
-            using NpgsqlConnection conn = new(_db_conn);
-            string feedbackA = $"Updating monitor import records, (mon.source_data_{tableName}), ";
-            string sqlString = $"select count(*) from sd.{tableName}";
-            int recCount  = conn.ExecuteScalar<int>(sqlString);
-            int recBatch = 100000;
-            if (recCount > recBatch)
-            {
-                for (int r = 1; r <= recCount; r += recBatch)
-                {
-                    sqlString = topSql + 
-                                 " and so.id >= " + r + " and so.id < " + (r + recBatch).ToString() 
-                                 + baseSql;
-                    conn.Execute(sqlString);
-                    string feedback = feedbackA + r + " to ";
-                    feedback += (r + recBatch < recCount) ? (r + recBatch - 1).ToString() : recCount.ToString();
-                    _loggingHelper.LogLine(feedback);
-                }
-            }
-            else
-            {
-                sqlString = topSql + baseSql;
-                conn.Execute(sqlString);
-                _loggingHelper.LogLine(feedbackA + recCount + " records, as a single batch");
-            }
-        }
-        catch (Exception e)
-        {
-            string res = e.Message;
-            _loggingHelper.LogError("In update last imported date (" + tableName + "): " + res);
-        }
     }
 
 }

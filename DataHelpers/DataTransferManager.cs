@@ -19,25 +19,17 @@ class DataTransferManager
         var _loggingHelper = loggingHelper;    
         _db_conn = _source.db_conn ?? "";
         
-        _ftm = new ForeignTableManager(_db_conn);
         _studyAdder = new StudyDataAdder(_db_conn, _loggingHelper);
         _objectAdder = new ObjectDataAdder(_db_conn, _loggingHelper);
         _deleter = new DataDeleter(_db_conn, _loggingHelper);
     }
 
-    public ImportEvent CreateImportEvent(int importId)
+    public ImportEvent CreateImportEvent(int importId, bool? tables_rebuilt)
     {
-        ImportEvent import = new ImportEvent(importId, _source.id);
+        ImportEvent import = new ImportEvent(importId, _source.id, tables_rebuilt);
         
-        if (_source.has_study_tables is true)
-        {
-            import.num_new_studies = GetTableCount("studies");
-        }
-        else
-        {
-            import.num_new_studies = 0;
-        }
-        import.num_new_objects = GetTableCount("data_objects");
+        import.num_sd_studies = _source.has_study_tables is true ? GetTableCount("studies") : 0;
+        import.num_sd_objects = GetTableCount("data_objects");
         return import;
     }
     
@@ -50,19 +42,6 @@ class DataTransferManager
     }
     
     
-    public void EstablishForeignMonTables(ICredentials creds)
-    {
-        if (creds.Username is not null && creds.Password is not null)
-        {
-            _ftm.EstablishMonForeignTables(creds.Username, creds.Password);
-        }
-    }
-
-    public void DropForeignMonTables()
-    {
-        _ftm.DropMonForeignTables();
-    }
-
     public void AddStudyData(int AddType)
     {
         _studyAdder.AddData("studies");
@@ -90,7 +69,7 @@ class DataTransferManager
             }
             if (_source.study_iec_storage_type == "By Year Groupings")
             {
-                _studyAdder.AddIECData("study_iec", "study_iec_pre12");
+                _studyAdder.AddIECData("study_iec", "study_iec_upto12");
                 _studyAdder.AddIECData("study_iec", "study_iec_13to19");
                 _studyAdder.AddIECData("study_iec", "study_iec_20on");
             }
@@ -136,9 +115,9 @@ class DataTransferManager
     }
 
     
-    public void DeleteMatchedStudyData(int importId)
+    public int DeleteMatchedStudyData(int importId)
     {
-        _deleter.DeleteStudyRecords("studies");
+        int res = _deleter.DeleteStudyRecords("studies");
         _deleter.DeleteStudyRecords("study_identifiers");
         _deleter.DeleteStudyRecords("study_titles");
 
@@ -162,7 +141,7 @@ class DataTransferManager
             }
             if (_source.study_iec_storage_type == "By Year Groupings")
             {
-                _deleter.DeleteStudyRecords("study_iec_pre12");
+                _deleter.DeleteStudyRecords("study_iec_upto12");
                 _deleter.DeleteStudyRecords("study_iec_13to19");
                 _deleter.DeleteStudyRecords("study_iec_20on");
             }
@@ -180,12 +159,13 @@ class DataTransferManager
                 }
             }
         }
+        return res;
     }
 
-    public void DeleteMatchedObjectData(int importId)
+    public int DeleteMatchedObjectData(int importId)
     {
 
-        _deleter.DeleteObjectRecords("data_objects");
+        int res = _deleter.DeleteObjectRecords("data_objects");
         _deleter.DeleteObjectRecords("object_instances");
         _deleter.DeleteObjectRecords("object_titles");
         _deleter.DeleteObjectRecords("object_hashes");
@@ -205,6 +185,9 @@ class DataTransferManager
             _deleter.DeleteObjectRecords("object_db_links");
             _deleter.DeleteObjectRecords("object_publication_types");
         }
+        return res;
     }
+    
+    
     
 }

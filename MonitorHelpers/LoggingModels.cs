@@ -39,7 +39,6 @@ public class Source
 }
 
 
-
 [Table("sf.import_events")]
 public class ImportEvent
 {
@@ -48,41 +47,22 @@ public class ImportEvent
     public int? source_id { get; set; }
     public DateTime? time_started { get; set; }
     public DateTime? time_ended { get; set; }
-    public int? num_new_studies { get; set; }
-    public int? num_matched_studies { get; set; }
-    public int? num_new_objects { get; set; }
-    public int? num_matched_objects { get; set; }
+    public bool? tables_rebuilt { get; set; }
+    public int? num_sd_studies { get; set; }
+    public int? num_matched_studies { get; set; } = 0;
+    public int? num_sd_objects { get; set; }
+    public int? num_matched_objects { get; set; } = 0;
     public string? comments { get; set; }
 
-    public ImportEvent(int? _id, int? _source_id)
+    public ImportEvent(int? _id, int? _source_id, bool? _tables_rebuilt)
     {
         id = _id;
         source_id = _source_id;
         time_started = DateTime.Now;
+        tables_rebuilt = _tables_rebuilt;
     }
 }
 
-[Table("ad.to_agg_imports")]
-public class HistoryRecord
-{
-    [ExplicitKey]
-    public int? id { get; set; }
-    public int? num_new_studies { get; set; }
-    public int? num_edited_studies { get; set; }
-    public int? num_new_objects { get; set; }
-    public int? num_edited_objects { get; set; }
-    public DateTime? time_created { get; set; }
-
-    public HistoryRecord(ImportEvent imp)
-    {
-        id = imp.id;
-        num_new_studies = imp.num_new_studies;
-        num_edited_studies = imp.num_matched_studies;
-        num_new_objects = imp.num_new_objects;
-        num_edited_objects = imp.num_matched_objects;
-        time_created = DateTime.Now;
-    }
-}
 
 [Table("sf.source_data_studies")]
 public class StudyFileRecord
@@ -102,7 +82,7 @@ public class StudyFileRecord
     public int? last_import_id { get; set; }
     public DateTime? last_imported { get; set; }
 
-    // constructor when a revision data can be expected (not always there)
+    // constructor when a revision date can be expected (not always there)
     public StudyFileRecord(int? _source_id, string? _sd_id, string? _remote_url, int? _last_saf_id,
                                           DateTime? _last_revised, string? _local_path)
     {

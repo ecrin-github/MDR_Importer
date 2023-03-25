@@ -118,7 +118,6 @@ public class ObjectTableBuilders
         CREATE TABLE ad.object_instances(
             id                     INT             GENERATED ALWAYS AS IDENTITY PRIMARY KEY
           , sd_oid                 VARCHAR         NULL
-          , instance_type_id       INT             NOT NULL  default 1
           , repository_org_id      INT             NULL
           , repository_org         VARCHAR         NULL
           , repository_org_ror_id  VARCHAR         NULL
