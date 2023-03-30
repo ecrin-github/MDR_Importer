@@ -8,7 +8,6 @@ class DataTransferManager
 {
     private readonly Source _source;
     private readonly string _db_conn;
-    private readonly ForeignTableManager _ftm;
     private readonly StudyDataAdder _studyAdder;
     private readonly ObjectDataAdder _objectAdder;
     private readonly DataDeleter _deleter;
@@ -187,7 +186,5 @@ class DataTransferManager
         }
         return res;
     }
-    
-    
-    
+
 }

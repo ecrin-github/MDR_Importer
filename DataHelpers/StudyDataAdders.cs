@@ -24,7 +24,7 @@ class StudyDataAdder
         { "study_references", @"sd_sid, pmid, citation, doi, type_id, comments" },
         { "study_people", @"sd_sid, contrib_type_id, person_given_name, 
         person_family_name, person_full_name, orcid_id, person_affiliation, organisation_id, 
-        organisation_name, organisation_ror_id" },
+        organisation_name" },
         { "study_organisations", @"sd_sid, contrib_type_id, organisation_id, 
         organisation_name" },
         { "study_topics", @"sd_sid, topic_type_id, original_value, original_ct_type_id, 
@@ -33,15 +33,14 @@ class StudyDataAdder
         { "study_features", @"sd_sid, feature_type_id, feature_value_id" },
         { "study_links", @"sd_sid, link_label, link_url" },
         { "study_countries", @"sd_sid, country_id, country_name, status_id" },
-        { "study_locations", @"sd_sid, facility_org_id, facility, facility_ror_id, 
+        { "study_locations", @"sd_sid, facility_org_id, facility,  
         city_id, city_name, country_id, country_name, status_id" },
         { "study_ipd_available", @"sd_sid, ipd_id, ipd_type, ipd_url, ipd_comment" },
         { "study_conditions", @"sd_sid, original_value, original_ct_type_id, original_ct_code, 
         icd_code, icd_name" },
-        { "study_iec", @"sd_sid, seq_num, leader, indent_level, level_seq_num, 
-        iec_type_id, iec_text" }
+        { "study_iec", @"sd_sid, seq_num, iec_type_id, split_type, leader, indent_level,
+          sequence_string, iec_text" }
     };
-    
     
     public void AddData(string table_name)
     {
@@ -51,7 +50,12 @@ class StudyDataAdder
         SELECT {fields}
         FROM sd.{table_name} s ";
 
-        _dbu.ExecuteTransferSQL(sql_string, table_name, "Adding");
+        int rec_batch = 250000;
+        if (table_name == "studies")
+        {
+            rec_batch = 100000;
+        }
+        _dbu.ExecuteTransferSQL(sql_string, table_name, rec_batch);
     }
 
     public void AddIECData(string fields_name, string table_name)
@@ -62,7 +66,7 @@ class StudyDataAdder
         SELECT {fields}
         FROM sd.{table_name} s ";
 
-        _dbu.ExecuteTransferSQL(sql_string, table_name, "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, table_name);
     }
     
 }

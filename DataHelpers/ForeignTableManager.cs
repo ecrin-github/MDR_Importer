@@ -5,14 +5,12 @@ namespace MDR_Importer;
 
 public class ForeignTableManager
 {
-    private readonly Source _source;
     private readonly string _db_conn;
     private readonly ILoggingHelper _logging_helper;
 
     public ForeignTableManager(Source source, ILoggingHelper logging_helper)
     {
-        _source = source;
-        _db_conn = _source.db_conn ?? "";
+        _db_conn = source.db_conn ?? "";
         _logging_helper = logging_helper;
     }
 
@@ -64,33 +62,31 @@ public class ForeignTableManager
     }
     
     
-    public void UpdateStudiesImportedDateInMon(int importId, int? sourceId)
+    public void UpdateStudiesImportedDateInMon(int importId)
     {
-        string top_string = @"Update mon_sf.source_data_studies src
+        string top_string = @"Update mn.source_data src
                       set last_import_id = " + importId + @", 
                       last_imported = current_timestamp
                       from 
-                         (select so.id, so.sd_sid 
+                         (select so.sd_sid 
                          FROM sd.studies so ";
         string base_string = @" ) s
-                          where s.sd_sid = src.sd_id and
-                          src.source_id = " + sourceId;
+                          where s.sd_sid = src.sd_sid;";
 
         UpdateLastImportedDate("studies", top_string, base_string);
     }
 
     
-    public void UpdateObjectsImportedDateInMon(int importId, int? sourceId)
+    public void UpdateObjectsImportedDateInMon(int importId)
     {
-        string top_string = @"UPDATE mon_sf.source_data_objects src
+        string top_string = @"UPDATE mn.source_data src
                       set last_import_id = " + importId + @", 
                       last_imported = current_timestamp
                       from 
-                         (select so.id, so.sd_oid 
-                          FROM sd.data_objects ob ";
+                         (select so.sd_oid 
+                          FROM sd.data_objects so ";
         string base_string = @" ) s
-                          where s.sd_oid = src.sd_id and
-                          src.source_id = " + sourceId;
+                          where s.sd_oid = src.sd_oid;";
 
         UpdateLastImportedDate("data_objects", top_string, base_string);
     }
@@ -104,13 +100,13 @@ public class ForeignTableManager
             string feedbackA = $"Updating monitor import records, (mon.source_data_{tableName}), ";
             string sqlString = $"select count(*) from sd.{tableName}";
             int recCount  = conn.ExecuteScalar<int>(sqlString);
-            int recBatch = 100000;
+            int recBatch = 50000;
             if (recCount > recBatch)
             {
                 for (int r = 1; r <= recCount; r += recBatch)
                 {
                     sqlString = topSql + 
-                                 " and so.id >= " + r + " and so.id < " + (r + recBatch)
+                                 " where so.id >= " + r + " and so.id < " + (r + recBatch)
                                  + baseSql;
                     conn.Execute(sqlString);
                     string feedback = feedbackA + r + " to ";

@@ -45,7 +45,7 @@ IHost host = Host.CreateDefaultBuilder()
 
 LoggingHelper loggingHelper = ActivatorUtilities.CreateInstance<LoggingHelper>(host.Services);
 Credentials credentials = ActivatorUtilities.CreateInstance<Credentials>(host.Services);
-MonDataLayer monDataLayer = new(credentials, loggingHelper);
+MonDataLayer monDataLayer = new(credentials);
 TestingDataLayer testDataLayer = new(credentials, loggingHelper);
 
 // Establish the parameter checker, which first checks if the program's 

@@ -93,19 +93,18 @@ public class Importer
         dtm.AddObjectData(importId);
         _loggingHelper.LogHeader("New data added to ad tables");
 
-        // Tidy up - Update the 'date imported' record in the
-        // mon.source data tables. Remove foreign tables
-        // Store import event.      
+        // Tidy up - Update the 'date imported' record in the mon.source data tables.
+        // Remove foreign tables and store import event.      
         
         _loggingHelper.LogHeader("Tidy up and finish");
         if (source.has_study_tables is true)
         {
-            ftm.UpdateStudiesImportedDateInMon(importId, source.id);
+            ftm.UpdateStudiesImportedDateInMon(importId);
         }
         else
         {
             // only do the objects table if there are no studies (e.g. PubMed)
-            ftm.UpdateObjectsImportedDateInMon(importId, source.id);
+            ftm.UpdateObjectsImportedDateInMon(importId);
         }
         ftm.DropForeignMonTables();
         _monDataLayer.StoreImportEvent(import);

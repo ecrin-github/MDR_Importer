@@ -56,7 +56,7 @@ class ObjectDataAdder
         eosc_category, add_study_contribs, add_study_topics, datetime_of_data_fetch
         FROM sd.data_objects s ";
 
-        _dbu.ExecuteTransferSQL(sql_string, "data_objects", "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, "data_objects", 100000);
     }
 
     public void AddData(string table_name)
@@ -67,7 +67,7 @@ class ObjectDataAdder
         SELECT {fields}
         FROM sd.{table_name} s ";
 
-        _dbu.ExecuteTransferSQL(sql_string, table_name, "Adding");
+        _dbu.ExecuteTransferSQL(sql_string, table_name);
     }
   
 }

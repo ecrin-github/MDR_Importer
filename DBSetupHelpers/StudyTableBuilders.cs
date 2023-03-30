@@ -312,10 +312,11 @@ public class StudyTableBuilders
             id                     INT             GENERATED ALWAYS AS IDENTITY PRIMARY KEY
           , sd_sid                 VARCHAR         NOT NULL
           , seq_num                INT             NULL
+          , iec_type_id            INT             NULL       
+          , split_type             VARCHAR         NULL              
           , leader                 VARCHAR         NOT NULL
           , indent_level           INT             NULL
-          , level_seq_num          INT             NULL
-          , iec_type_id            INT             NULL
+          , sequence_string        VARCHAR         NULL
           , iec_text               VARCHAR         NULL
           , iec_class_id           INT             NULL
           , iec_class              VARCHAR         NULL
@@ -327,7 +328,7 @@ public class StudyTableBuilders
 
         Execute_SQL(sql_string);
     }
-
+    
     public void create_table_study_iec()
     {
         create_iec_table("study_iec");
@@ -348,7 +349,7 @@ public class StudyTableBuilders
         create_iec_table("study_iec_0910");
         create_iec_table("study_iec_1112");
         create_iec_table("study_iec_1314");
-        for (int i = 15; i < 30; i++)
+        for (int i = 15; i <= 30; i++)
         {
             create_iec_table($"study_iec_{i}");
         }
