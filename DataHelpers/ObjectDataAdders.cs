@@ -39,8 +39,10 @@ class ObjectDataAdder
         { "object_db_links", @"sd_oid, db_sequence, db_name, id_in_db" },
         { "object_publication_types", @"sd_oid, type_name" },
         { "object_rights", @"sd_oid, rights_name, rights_uri, comments" },
-        { "object_relationships", @"sd_oid, relationship_type_id, target_sd_oid" }
+        { "object_relationships", @"sd_oid, relationship_type_id, target_sd_oid" },
+        { "journal_details", @"sd_oid, pissn, eissn, journal_title" }
     };
+    
     
     public void AddDataObjects()
     {

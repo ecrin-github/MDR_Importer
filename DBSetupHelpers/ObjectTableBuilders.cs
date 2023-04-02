@@ -354,7 +354,6 @@ public class ObjectTableBuilders
           , journal_title          VARCHAR         NULL
           , publisher_id           INT             NULL
           , publisher              VARCHAR         NULL
-          , publisher_suffix       VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL   
         );
