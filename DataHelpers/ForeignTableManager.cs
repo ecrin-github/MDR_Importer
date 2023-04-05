@@ -97,7 +97,7 @@ public class ForeignTableManager
         try
         {   
             using NpgsqlConnection conn = new(_db_conn);
-            string feedbackA = $"Updating monitor import records, (mon.source_data_{tableName}), ";
+            string feedbackA = "Updating monitor records with import date / time,  ";
             string sqlString = $"select count(*) from sd.{tableName}";
             int recCount  = conn.ExecuteScalar<int>(sqlString);
             int recBatch = 50000;
@@ -118,7 +118,7 @@ public class ForeignTableManager
             {
                 sqlString = topSql + baseSql;
                 conn.Execute(sqlString);
-                _logging_helper.LogLine(feedbackA + recCount + " records, as a single batch");
+                _logging_helper.LogLine(feedbackA + recCount + " records, as a single query");
             }
         }
         catch (Exception e)
