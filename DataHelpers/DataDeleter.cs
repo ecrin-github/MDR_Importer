@@ -20,7 +20,7 @@ class DataDeleter
         title_lang_code, brief_description, data_sharing_statement,
         study_start_year, study_start_month, study_type_id, 
         study_status_id, study_enrolment, study_gender_elig_id, min_age, 
-        min_age_units_id, max_age, max_age_units_id, datetime_of_data_fetch, added_on" },
+        min_age_units_id, max_age, max_age_units_id, iec_level, datetime_of_data_fetch, added_on" },
         { "study_identifiers", @"sd_sid, identifier_value, identifier_type_id, 
         identifier_org_id, identifier_org, identifier_org_ror_id,
         identifier_date, identifier_link, added_on, coded_on" },
@@ -43,8 +43,8 @@ class DataDeleter
         { "study_ipd_available", @"sd_sid, ipd_id, ipd_type, ipd_url, ipd_comment, added_on" },
         { "study_conditions", @"sd_sid, original_value, original_ct_type_id, original_ct_code, 
         icd_code, icd_name, added_on, coded_on" },
-        { "study_iec", @"sd_sid, seq_num, leader, indent_level, level_seq_num,
-        iec_type_id, iec_text, iec_class_id, iec_class, iec_parsed_text, added_on, coded_on" }
+        { "study_iec", @"sd_sid, seq_num, iec_type_id, split_type, leader, indent_level, 
+        sequence_string, iec_text, iec_class_id, iec_class, iec_parsed_text, added_on, coded_on" }
     };
     
     private readonly Dictionary<string, string> objectFields = new() 
@@ -73,7 +73,7 @@ class DataDeleter
         { "object_organisations", @"sd_oid, contrib_type_id, organisation_id, 
         organisation_name, organisation_ror_id, added_on, coded_on" },
         { "object_topics", @"sd_oid, topic_type_id, original_value, original_ct_type_id,
-          original_ct_code, mesh_code, mesh_value, added_on, coded_on" },
+         original_ct_code, mesh_code, mesh_value, added_on, coded_on" },
         { "object_comments", @"sd_oid, ref_type, ref_source, pmid, pmid_version, notes, added_on" },
         { "object_descriptions", @"sd_oid, description_type_id, label, description_text, lang_code, added_on" },
         { "object_identifiers", @"sd_oid, identifier_value, identifier_type_id, 
@@ -81,8 +81,24 @@ class DataDeleter
         { "object_db_links", @"sd_oid, db_sequence, db_name, id_in_db, added_on" },
         { "object_publication_types", @"sd_oid, type_name, added_on" },
         { "object_rights", @"sd_oid, rights_name, rights_uri, comments, added_on" },
-        { "object_relationships", @"sd_oid, relationship_type_id, target_sd_oid, added_on" }
+        { "object_relationships", @"sd_oid, relationship_type_id, target_sd_oid, added_on" },
+        { "journal_details", @"sd_oid, pissn, eissn, journal_title, publisher_id, 
+        publisher, added_on, coded_on" }
     };
+    
+    public int GetADRecordCount(string table_name)
+    {
+        string sql_string = @"select count(*) from ad." + table_name;
+        using var conn = new NpgsqlConnection(_db_conn);
+        return conn.ExecuteScalar<int>(sql_string);
+    }
+    
+    public int GetNextSequenceValue(string table_name)
+    {
+        string sql_string = $@"SELECT nextval('ad.{table_name}_id_seq')";
+        using var conn = new NpgsqlConnection(_db_conn);
+        return conn.ExecuteScalar<int>(sql_string);
+    }
     
     public int DeleteStudyRecords(string table_name)
     {
@@ -93,7 +109,29 @@ class DataDeleter
         using var conn = new NpgsqlConnection(_db_conn);
         int res = conn.Execute(sql_string);
         _logging_helper.LogLine($"Deleted {res} from ad.{table_name}");
-        CompactSequence(table_name, studyFields[table_name]);
+        
+        // if ad.table is empty reset the sequence number to 1
+        // Otherwise, and ad.table size < 90% of current max id...
+        // compact the sequence in the ad table before adding new records from sd
+
+        int ad_size = GetADRecordCount(table_name);
+        if (ad_size == 0)
+        {
+            sql_string = $"SELECT setval('ad.{table_name}_id_seq', 1) FROM ad.{table_name}"; 
+            conn.Execute(sql_string);
+        }
+        else
+        {
+            int next_id = GetNextSequenceValue(table_name);
+            if (ad_size < 0.9 * next_id)
+            {
+                string data_columns = table_name.StartsWith("study_iec")
+                    ? studyFields["study_iec"]
+                    : studyFields[table_name];
+                CompactSequence(table_name, data_columns);
+            }
+        }
+        
         return res;
     }
     
@@ -106,31 +144,48 @@ class DataDeleter
         using var conn = new NpgsqlConnection(_db_conn);
         int res = conn.Execute(sql_string);
         _logging_helper.LogLine($"Deleted {res} from ad.{table_name}");
-        CompactSequence(table_name, objectFields[table_name]);
+        
+        int ad_size = GetADRecordCount(table_name);
+        if (ad_size == 0)
+        {
+            sql_string = $"SELECT setval('ad.{table_name}_id_seq', 1) FROM ad.{table_name}"; 
+            conn.Execute(sql_string);
+        }
+        else
+        {
+            int next_id = GetNextSequenceValue(table_name);
+            if (ad_size < 0.9 * next_id)
+            {
+                CompactSequence(table_name, objectFields[table_name]);
+            }
+        }
+
         return res;
 
     }
 
     private void CompactSequence(string table_name, string data_columns)
     {
-        // from https://dba.stackexchange.com/questions/111823/compacting-a-sequence-in-postgresql.
+        // adapted from https://dba.stackexchange.com/questions/111823/compacting-a-sequence-in-postgresql
+        // changes are because dealing with identity columns rather than sequences
         
         string tbl_new = table_name + "_new";
         string sql_string = $@"BEGIN;
-        LOCK {table_name};
-        CREATE TABLE {tbl_new} (LIKE {table_name} INCLUDING ALL);
+        LOCK ad.{table_name};
+        CREATE TABLE IF NOT EXISTS ad.{tbl_new} (LIKE ad.{table_name} INCLUDING ALL);
 
-        INSERT INTO {tbl_new} -- no target list in this case
+        INSERT INTO ad.{tbl_new} OVERRIDING SYSTEM VALUE        -- no target list in this case
         SELECT row_number() OVER (ORDER BY id), {data_columns}  -- all columns in default order
-        FROM  {table_name};
-        ALTER SEQUENCE {table_name}_id_seq OWNED BY {tbl_new}.id;  -- make new table own sequence
+        FROM ad.{table_name};
 
-        DROP TABLE {tbl_new};
-        ALTER TABLE {tbl_new} RENAME TO {table_name};
-        SELECT setval('{table_name}_id_seq', max(id)) FROM {table_name};  -- reset sequence
+        DROP TABLE ad.{table_name};
+        ALTER TABLE ad.{tbl_new} RENAME TO {table_name};
+        ALTER SEQUENCE ad.{tbl_new}_id_seq RENAME TO {table_name}_id_seq;
+        SELECT setval('ad.{table_name}_id_seq', max(id)) FROM ad.{table_name};  -- reset sequence
         COMMIT;";
 
         using var conn = new NpgsqlConnection(_db_conn);
         conn.Execute(sql_string);
+        _logging_helper.LogLine($"Compacted sequence for ad.{table_name}");
     }
 }

@@ -167,7 +167,6 @@ class DataTransferManager
         int res = _deleter.DeleteObjectRecords("data_objects");
         _deleter.DeleteObjectRecords("object_instances");
         _deleter.DeleteObjectRecords("object_titles");
-        _deleter.DeleteObjectRecords("object_hashes");
 
         // these are database dependent		
 
