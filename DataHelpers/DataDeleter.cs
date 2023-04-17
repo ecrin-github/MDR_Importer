@@ -128,7 +128,14 @@ class DataDeleter
                 string data_columns = table_name.StartsWith("study_iec")
                     ? studyFields["study_iec"]
                     : studyFields[table_name];
-                CompactSequence(table_name, data_columns);
+                if (ad_size < 200000)
+                {
+                    CompactSequence(table_name, data_columns);
+                }
+                else
+                {
+                    CompactBigTableSequence(ad_size, table_name, data_columns);
+                }
             }
         }
         
@@ -156,7 +163,14 @@ class DataDeleter
             int next_id = GetNextSequenceValue(table_name);
             if (ad_size < 0.9 * next_id)
             {
-                CompactSequence(table_name, objectFields[table_name]);
+                if (ad_size < 200000)
+                {
+                    CompactSequence(table_name, objectFields[table_name]);
+                }
+                else
+                {
+                    CompactBigTableSequence(ad_size, table_name, objectFields[table_name]);
+                }
             }
         }
 
@@ -168,6 +182,9 @@ class DataDeleter
     {
         // adapted from https://dba.stackexchange.com/questions/111823/compacting-a-sequence-in-postgresql
         // changes are because dealing with identity columns rather than sequences
+        
+        // But method below does not work with very large tables - times out!
+        
         
         string tbl_new = table_name + "_new";
         string sql_string = $@"BEGIN;
@@ -187,5 +204,39 @@ class DataDeleter
         using var conn = new NpgsqlConnection(_db_conn);
         conn.Execute(sql_string);
         _logging_helper.LogLine($"Compacted sequence for ad.{table_name}");
+    }
+    
+    private void CompactBigTableSequence(int ad_size, string table_name, string data_columns)
+    {
+        // adapted from https://dba.stackexchange.com/questions/111823/compacting-a-sequence-in-postgresql
+        // changes are because dealing with identity columns rather than sequences
+        
+        // For tables with more than 250,000 rows, for the moment...
+
+        string tbl_new = table_name + "_new";
+        string sql_string = $@"CREATE TABLE IF NOT EXISTS ad.{tbl_new} (LIKE ad.{table_name} INCLUDING ALL);";
+        
+        using var conn = new NpgsqlConnection(_db_conn);
+        conn.Execute(sql_string);
+
+        int rec_batch = 200000;
+        for (int i = 0; i <= ad_size; i+= rec_batch)
+        {
+            // Sends across all columns in default order
+            
+            sql_string = $@"INSERT INTO ad.{tbl_new} ({data_columns})  
+            SELECT {data_columns} 
+            FROM ad.{table_name} where id > {i} and id <= {i + rec_batch}
+            order by id;";
+            conn.Execute(sql_string);
+        }
+
+        sql_string = $@"DROP TABLE ad.{table_name};
+        ALTER TABLE ad.{tbl_new} RENAME TO {table_name};
+        ALTER SEQUENCE ad.{tbl_new}_id_seq RENAME TO {table_name}_id_seq; ;
+        ALTER INDEX ad.{tbl_new}_sd_sid_idx RENAME TO {table_name}_sd_sid_idx;  ";
+        
+        conn.Execute(sql_string);
+        _logging_helper.LogLine($"Compacted sequence for ad.{table_name}, to {ad_size} rows");
     }
 }

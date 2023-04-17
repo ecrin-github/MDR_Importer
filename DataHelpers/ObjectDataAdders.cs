@@ -25,24 +25,24 @@ class ObjectDataAdder
         lang_usage_id, is_default, comments" },
         { "object_dates", @"sd_oid, date_type_id, date_is_range, date_as_string, start_year, 
         start_month, start_day, end_year, end_month, end_day, details" },
-        { "object_people", @"sd_oid, contrib_type_id, person_id, person_given_name, 
+        { "object_people", @"sd_oid, contrib_type_id, person_given_name, 
         person_family_name, person_full_name, orcid_id, person_affiliation, organisation_id, 
-        organisation_name, organisation_ror_id" },
+        organisation_name" },
         { "object_organisations", @"sd_oid, contrib_type_id, organisation_id, 
-        organisation_name, organisation_ror_id" },
+        organisation_name" },
         { "object_topics", @"sd_oid, topic_type_id, original_value, original_ct_type_id,
           original_ct_code, mesh_code, mesh_value" },
         { "object_comments", @"sd_oid, ref_type, ref_source, pmid, pmid_version, notes" },
         { "object_descriptions", @"sd_oid, description_type_id, label, description_text, lang_code" },
         { "object_identifiers", @"sd_oid, identifier_value, identifier_type_id, 
-        identifier_org_id, identifier_org, identifier_org_ror_id, identifier_date" },
+        identifier_org_id, identifier_org, identifier_date" },
         { "object_db_links", @"sd_oid, db_sequence, db_name, id_in_db" },
         { "object_publication_types", @"sd_oid, type_name" },
         { "object_rights", @"sd_oid, rights_name, rights_uri, comments" },
         { "object_relationships", @"sd_oid, relationship_type_id, target_sd_oid" },
-        { "journal_details", @"sd_oid, pissn, eissn, journal_title" }
+        { "journal_details", @"sd_oid, journal_title, pissn, eissn, journal_nlm_id, journal_iso_abbrev"}
     };
-    
+
     
     public void AddDataObjects()
     {
