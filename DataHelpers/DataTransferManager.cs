@@ -110,6 +110,7 @@ class DataTransferManager
             _objectAdder.AddData("object_identifiers");
             _objectAdder.AddData("object_db_links");
             _objectAdder.AddData("object_publication_types");
+            _objectAdder.AddData("journal_details");
         }
     }
 
@@ -182,6 +183,7 @@ class DataTransferManager
             _deleter.DeleteObjectRecords("object_identifiers");
             _deleter.DeleteObjectRecords("object_db_links");
             _deleter.DeleteObjectRecords("object_publication_types");
+            _deleter.DeleteObjectRecords("journal_details");
         }
         return res;
     }
