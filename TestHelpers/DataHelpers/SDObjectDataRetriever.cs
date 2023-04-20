@@ -69,11 +69,11 @@ class SDObjectDataRetriever
     public void TransferObjectInstances()
     {
         string sql_string = @"INSERT INTO sd.object_instances(sd_oid,
-        instance_type_id, instance_type, repository_org_id, repository_org,
+        instance_type_id, instance_type, system_id, system,
         url, url_accessible, url_last_checked, resource_type_id, resource_type, 
         resource_size, resource_size_units, resource_comments)
         SELECT sd_oid,
-        instance_type_id, instance_type, repository_org_id, repository_org,
+        instance_type_id, instance_type, system_id, system,
         url, url_accessible, url_last_checked, resource_type_id, resource_type, 
         resource_size, resource_size_units, resource_comments
         FROM sdcomp.object_instances
@@ -181,11 +181,11 @@ class SDObjectDataRetriever
     {
         string sql_string = @"INSERT INTO sd.object_identifiers(sd_oid, 
         identifier_value, identifier_type_id, identifier_type, 
-        identifier_org_id, identifier_org, identifier_org_ror_id,
+        source_id, source, source_ror_id,
         identifier_date)
         SELECT sd_oid, 
         identifier_value, identifier_type_id, identifier_type, 
-        identifier_org_id, identifier_org, identifier_org_ror_id,
+        source_id, source, source_ror_id,
         identifier_date
         FROM sdcomp.object_identifiers
         where source_id = " + _source_id;

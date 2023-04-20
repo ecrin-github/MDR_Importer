@@ -50,11 +50,11 @@ class SDStudyDataRetriever
     {
         string sqlString = @"INSERT INTO sd.study_identifiers(sd_sid,
         identifier_value, identifier_type_id, identifier_type, 
-        identifier_org_id, identifier_org, identifier_org_ror_id, 
+        source_id, source, source_ror_id, 
         identifier_date, identifier_link)
         SELECT sd_sid,
         identifier_value, identifier_type_id, identifier_type, 
-        identifier_org_id, identifier_org, identifier_org_ror_id, 
+        source_id, source, source_ror_id, 
         identifier_date, identifier_link
         FROM sdcomp.study_identifiers
         where source_id = " + _sourceId;

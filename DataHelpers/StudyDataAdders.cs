@@ -18,7 +18,7 @@ class StudyDataAdder
         study_status_id, study_enrolment, study_gender_elig_id, min_age, 
         min_age_units_id, max_age, max_age_units_id, iec_level, datetime_of_data_fetch" },
         { "study_identifiers", @"sd_sid, identifier_value, identifier_type_id, 
-        identifier_org_id, identifier_org, identifier_date, identifier_link" },
+        source_id, source, identifier_date, identifier_link" },
         { "study_titles", @"sd_sid, title_type_id, title_text, lang_code, lang_usage_id,
         is_default, comments" },
         { "study_references", @"sd_sid, pmid, citation, doi, type_id, comments" },

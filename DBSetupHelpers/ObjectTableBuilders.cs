@@ -118,9 +118,8 @@ public class ObjectTableBuilders
         CREATE TABLE ad.object_instances(
             id                     INT             GENERATED ALWAYS AS IDENTITY PRIMARY KEY
           , sd_oid                 VARCHAR         NULL
-          , repository_org_id      INT             NULL
-          , repository_org         VARCHAR         NULL
-          , repository_org_ror_id  VARCHAR         NULL
+          , system_id              INT             NULL
+          , system                 VARCHAR         NULL
           , url                    VARCHAR         NULL
           , url_accessible         BOOLEAN         NULL
           , url_last_checked       DATE            NULL
@@ -265,9 +264,9 @@ public class ObjectTableBuilders
           , sd_oid                 VARCHAR        NULL
           , identifier_value       VARCHAR         NULL
           , identifier_type_id     INT             NULL
-          , identifier_org_id      INT             NULL
-          , identifier_org         VARCHAR         NULL
-          , identifier_org_ror_id  VARCHAR         NULL
+          , source_id              INT             NULL
+          , source                 VARCHAR         NULL
+          , source_ror_id          VARCHAR         NULL
           , identifier_date        VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL   

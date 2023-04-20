@@ -26,7 +26,6 @@ class ADCompTableBuilder
         studytablebuilder.create_table_study_links();
         studytablebuilder.create_table_study_countries();
         studytablebuilder.create_table_study_locations();
-        studytablebuilder.create_table_study_hashes();
     }
 
 
@@ -48,7 +47,6 @@ class ADCompTableBuilder
         objecttablebuilder.create_table_object_rights();
         objecttablebuilder.create_table_object_comments();
         objecttablebuilder.create_table_object_relationships();
-        objecttablebuilder.create_table_object_hashes();
     }
 
 }
