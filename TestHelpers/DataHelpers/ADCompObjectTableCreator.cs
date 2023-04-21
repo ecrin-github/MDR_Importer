@@ -319,7 +319,7 @@ public class ADCompObjectTableCreator
         Execute_SQL(sql_string);
     }
 
-
+/*
     public void create_table_citation_objects()
     {
         string sql_string = @"DROP TABLE IF EXISTS adcomp.citation_objects;
@@ -353,4 +353,5 @@ public class ADCompObjectTableCreator
 
         Execute_SQL(sql_string);
     }
+    */
 }
