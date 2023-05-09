@@ -25,10 +25,11 @@ class DataTransferManager
 
     public ImportEvent CreateImportEvent(int importId, bool? tables_rebuilt)
     {
-        ImportEvent import = new ImportEvent(importId, _source.id, tables_rebuilt);
-        
-        import.num_sd_studies = _source.has_study_tables is true ? GetTableCount("studies") : 0;
-        import.num_sd_objects = GetTableCount("data_objects");
+        ImportEvent import = new ImportEvent(importId, _source.id, tables_rebuilt)
+        {
+            num_sd_studies = _source.has_study_tables is true ? GetTableCount("studies") : 0,
+            num_sd_objects = GetTableCount("data_objects")
+        };
         return import;
     }
     
@@ -41,7 +42,7 @@ class DataTransferManager
     }
     
     
-    public void AddStudyData(int AddType)
+    public void AddStudyData()
     {
         _studyAdder.AddData("studies");
         _studyAdder.AddData("study_identifiers");
@@ -64,7 +65,7 @@ class DataTransferManager
         {
             if (_source.study_iec_storage_type == "Single Table")
             {
-                _studyAdder.AddIECData("study_iec", "study_iec");;
+                _studyAdder.AddIECData("study_iec", "study_iec");
             }
             if (_source.study_iec_storage_type == "By Year Groupings")
             {
@@ -88,7 +89,7 @@ class DataTransferManager
         }
     }
 
-    public void AddObjectData(int importId)
+    public void AddObjectData()
     {
         _objectAdder.AddDataObjects();
         _objectAdder.AddData("object_instances");
@@ -115,75 +116,75 @@ class DataTransferManager
     }
 
     
-    public int DeleteMatchedStudyData(int importId)
+    public int DeleteMatchedStudyData()
     {
-        int res = _deleter.DeleteStudyRecords("studies");
-        _deleter.DeleteStudyRecords("study_identifiers");
-        _deleter.DeleteStudyRecords("study_titles");
+        int res = _deleter.DeleteRecords("st", "studies");
+        _deleter.DeleteRecords("st","study_identifiers");
+        _deleter.DeleteRecords("st","study_titles");
 
         // these are database dependent
-        if (_source.has_study_references is true) _deleter.DeleteStudyRecords("study_references");
-        if (_source.has_study_people is true) _deleter.DeleteStudyRecords("study_people");
-        if (_source.has_study_organisations is true) _deleter.DeleteStudyRecords("study_organisations");
-        if (_source.has_study_topics is true) _deleter.DeleteStudyRecords("study_topics");
-        if (_source.has_study_features is true) _deleter.DeleteStudyRecords("study_features");
-        if (_source.has_study_relationships is true) _deleter.DeleteStudyRecords("study_relationships");
-        if (_source.has_study_links is true) _deleter.DeleteStudyRecords("study_links");
-        if (_source.has_study_countries is true) _deleter.DeleteStudyRecords("study_countries");
-        if (_source.has_study_locations is true) _deleter.DeleteStudyRecords("study_locations");
-        if (_source.has_study_conditions is true) _deleter.DeleteStudyRecords("study_conditions");
-        if (_source.has_study_ipd_available is true) _deleter.DeleteStudyRecords("study_ipd_available");
+        if (_source.has_study_references is true) _deleter.DeleteRecords("st","study_references");
+        if (_source.has_study_people is true) _deleter.DeleteRecords("st","study_people");
+        if (_source.has_study_organisations is true) _deleter.DeleteRecords("st","study_organisations");
+        if (_source.has_study_topics is true) _deleter.DeleteRecords("st","study_topics");
+        if (_source.has_study_features is true) _deleter.DeleteRecords("st","study_features");
+        if (_source.has_study_relationships is true) _deleter.DeleteRecords("st","study_relationships");
+        if (_source.has_study_links is true) _deleter.DeleteRecords("st","study_links");
+        if (_source.has_study_countries is true) _deleter.DeleteRecords("st","study_countries");
+        if (_source.has_study_locations is true) _deleter.DeleteRecords("st","study_locations");
+        if (_source.has_study_conditions is true) _deleter.DeleteRecords("st","study_conditions");
+        if (_source.has_study_ipd_available is true) _deleter.DeleteRecords("st","study_ipd_available");
         if (_source.has_study_iec is true)
         {
             if (_source.study_iec_storage_type == "Single Table")
             {
-                _deleter.DeleteStudyRecords("study_iec");;
+                _deleter.DeleteRecords("st","study_iec");
             }
             if (_source.study_iec_storage_type == "By Year Groupings")
             {
-                _deleter.DeleteStudyRecords("study_iec_upto12");
-                _deleter.DeleteStudyRecords("study_iec_13to19");
-                _deleter.DeleteStudyRecords("study_iec_20on");
+                _deleter.DeleteRecords("st","study_iec_upto12");
+                _deleter.DeleteRecords("st","study_iec_13to19");
+                _deleter.DeleteRecords("st","study_iec_20on");
             }
             if (_source.study_iec_storage_type == "By Years")
             {
-                _deleter.DeleteStudyRecords("study_iec_null");
-                _deleter.DeleteStudyRecords("study_iec_pre06");
-                _deleter.DeleteStudyRecords("study_iec_0608");
-                _deleter.DeleteStudyRecords("study_iec_0910");
-                _deleter.DeleteStudyRecords("study_iec_1112");
-                _deleter.DeleteStudyRecords("study_iec_1314");
+                _deleter.DeleteRecords("st","study_iec_null");
+                _deleter.DeleteRecords("st","study_iec_pre06");
+                _deleter.DeleteRecords("st","study_iec_0608");
+                _deleter.DeleteRecords("st","study_iec_0910");
+                _deleter.DeleteRecords("st","study_iec_1112");
+                _deleter.DeleteRecords("st","study_iec_1314");
                 for (int i = 15; i < 30; i++)
                 {
-                    _deleter.DeleteStudyRecords($"study_iec_{i}");
+                    _deleter.DeleteRecords("st", $"study_iec_{i}");
                 }
             }
         }
         return res;
     }
 
-    public int DeleteMatchedObjectData(int importId)
+    public int DeleteMatchedObjectData()
     {
 
-        int res = _deleter.DeleteObjectRecords("data_objects");
-        _deleter.DeleteObjectRecords("object_instances");
-        _deleter.DeleteObjectRecords("object_titles");
+        int res = _deleter.DeleteRecords("ob", "data_objects");
+        _deleter.DeleteRecords("ob","object_instances");
+        _deleter.DeleteRecords("ob","object_titles");
 
         // these are database dependent		
 
-        if (_source.has_object_datasets is true) _deleter.DeleteObjectRecords("object_datasets");
-        if (_source.has_object_dates is true) _deleter.DeleteObjectRecords("object_dates");
+        if (_source.has_object_datasets is true) _deleter.DeleteRecords("ob","object_datasets");
+        if (_source.has_object_dates is true) _deleter.DeleteRecords("ob","object_dates");
         if (_source.has_object_pubmed_set is true)
         {
-            _deleter.DeleteObjectRecords("object_people");
-            _deleter.DeleteObjectRecords("object_organisations");
-            _deleter.DeleteObjectRecords("object_topics");
-            _deleter.DeleteObjectRecords("object_comments");
-            _deleter.DeleteObjectRecords("object_descriptions");
-            _deleter.DeleteObjectRecords("object_identifiers");
-            _deleter.DeleteObjectRecords("object_db_links");
-            _deleter.DeleteObjectRecords("object_publication_types");
-            _deleter.DeleteObjectRecords("journal_details");
+            _deleter.DeleteRecords("ob","object_people");
+            _deleter.DeleteRecords("ob","object_organisations");
+            _deleter.DeleteRecords("ob","object_topics");
+            _deleter.DeleteRecords("ob","object_comments");
+            _deleter.DeleteRecords("ob","object_descriptions");
+            _deleter.DeleteRecords("ob","object_identifiers");
+            _deleter.DeleteRecords("ob","object_db_links");
+            _deleter.DeleteRecords("ob","object_publication_types");
+            _deleter.DeleteRecords("ob","journal_details");
         }
         return res;
     }

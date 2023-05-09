@@ -15,14 +15,14 @@ public class Credentials : ICredentials
         Password = settings["password"];
     }
 
-    public string GetConnectionString(string database_name, bool using_test_data)
+    public string GetConnectionString(string database_name)
     {
         NpgsqlConnectionStringBuilder builder = new NpgsqlConnectionStringBuilder
         {
             Host = _host,
             Username = Username,
             Password = Password,
-            Database = (using_test_data) ? "test" : database_name
+            Database = database_name
         };
         return builder.ConnectionString;
     }

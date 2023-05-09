@@ -24,6 +24,7 @@
     <Compile Remove="DataHelpers\ImportHelper.cs" />
     <Compile Remove="DataTransferHelpers\ObjectDataDeleter.cs" />
     <Compile Remove="DataTransferHelpers\ImportTableManager.cs" />
+    <Compile Remove="TestHelpers\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,11 @@
     <None Update="Properties\launchSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Remove="TestHelpers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="TestHelpers\**" />
   </ItemGroup>
 
 </Project>

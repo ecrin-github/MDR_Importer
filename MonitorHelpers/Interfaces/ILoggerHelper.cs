@@ -3,8 +3,7 @@ namespace MDR_Importer;
 
 public interface ILoggingHelper
 {
-    string LogFilePath { get; }    
-    
+   
     void LogLine(string message, string identifier = "");    
     void LogHeader(string header_text);
     void LogStudyHeader(Options opts, string dbLine);   
@@ -20,9 +19,5 @@ public interface ILoggingHelper
 
     void CloseLog();   
     
-    void LogTableStatistics(Source s, string schema);
-    void LogDiffs(Source s);
-    
-    string GetTableRecordCount(string db_conn, string schema, string table_name);
 }
 

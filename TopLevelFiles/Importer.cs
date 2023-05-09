@@ -25,7 +25,7 @@ public class Importer
                     
                 Source source = _monDataLayer.FetchSourceParameters(sourceId)!;
                 string dbName = source.database_name!;
-                source.db_conn = _monDataLayer.GetConnectionString(dbName, false);
+                source.db_conn = _monDataLayer.GetConnectionString(dbName);
                 
                 _loggingHelper.OpenLogFile(source.database_name!);
                 _loggingHelper.LogHeader("STARTING IMPORTER");
@@ -80,17 +80,17 @@ public class Importer
         {
             if (source.has_study_tables is true)
             {
-                import.num_matched_studies = dtm.DeleteMatchedStudyData(importId);
+                import.num_matched_studies = dtm.DeleteMatchedStudyData();
             }
-            import.num_matched_objects = dtm.DeleteMatchedObjectData(importId);
+            import.num_matched_objects = dtm.DeleteMatchedObjectData();
             _loggingHelper.LogHeader("Matched data deleted from ad tables");
         }
        
         if (source.has_study_tables is true)
         {
-            dtm.AddStudyData(importId);
+            dtm.AddStudyData();
         }
-        dtm.AddObjectData(importId);
+        dtm.AddObjectData();
         _loggingHelper.LogHeader("New data added to ad tables");
 
         // Tidy up - Update the 'date imported' record in the mon.source data tables.

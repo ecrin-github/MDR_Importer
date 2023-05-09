@@ -69,12 +69,13 @@ public class LoggingHelper : ILoggingHelper
         string header = dtPrefix + "**** " + message.ToUpper() + " ****";
         Transmit("");
         Transmit(header);
+        Transmit("");
     }
 
 
     public void LogStudyHeader(Options opts, string dbLine)
     {
-        string dividerLine = opts.UsingTestData ? new string('-', 70) : new string('=', 70);
+        string dividerLine = new string('=', 70);
         LogLine("");
         LogLine(dividerLine);
         LogLine(dbLine);
@@ -133,8 +134,6 @@ public class LoggingHelper : ILoggingHelper
         }
 
         LogLine("Rebuild AD tables is: " + opts.RebuildAdTables);
-        LogLine("Using test data is: " + opts.UsingTestData);
-        LogLine("Creating test report is: " + opts.CreateTestReport);
         LogLine("");
     }
 
@@ -157,7 +156,7 @@ public class LoggingHelper : ILoggingHelper
     }
 
 
-    public void LogTableStatistics(Source s, string schema)
+    private void LogTableStatistics(Source s, string schema)
     {
         // Gets and logs record count for each table in the ad schema of the database
         // Start by obtaining connection string, then construct log line for each by 
@@ -214,83 +213,8 @@ public class LoggingHelper : ILoggingHelper
             LogLine(GetTableRecordCount(dbConn, schema, "object_publication_types"));
         }
     }
-
     
-    public void LogDiffs(Source s)
-    {
-        string dbConn = s.db_conn!;
-
-        LogLine("");
-        LogLine("SD - AD Differences");
-        LogLine("");
-        if (s.has_study_tables is true)
-        {
-            LogLine(GetTableRecordCount(dbConn, "study_recs"));
-        }
-        LogLine(GetTableRecordCount(dbConn, "object_recs"));
-        
-    }
-
     
-    private string GetTableRecordCount(string dbConn, string tableName)
-    {
-        string tName = "sd." + tableName;
-        string sqlString = $"select count(*) from {tName}";
-
-        using NpgsqlConnection conn = new NpgsqlConnection(dbConn);
-        int res = conn.ExecuteScalar<int>(sqlString);
-        return res + " records found in sd." + tableName;
-    }
-
-    private void GetStudyStats(string dbConn, string tableType)
-    {
-        string tableName = "sd.to_ad_study_" + tableType;
-        string sqlString = $@"select status, count(sd_sid) as num from {tableName}
-                           group by status order by status;";
-        GetAndWriteStats(dbConn, sqlString);
-    }
-
-    private void GetObjectStats(string dbConn, string tableType)
-    {
-        string tableName = "sd.to_ad_object_" + tableType;
-        string sqlString = $@"select status, count(sd_oid) as num from {tableName}
-                              group by status order by status;";
-        GetAndWriteStats(dbConn, sqlString);
-    }
-
-    private void GetAndWriteStats(string dbConn, string sqlString)
-    {
-        using NpgsqlConnection conn = new(dbConn);
-        List<att_stat> statusStats = conn.Query<att_stat>(sqlString).ToList();
-        if (statusStats.Any())
-        {
-            foreach (att_stat hs in statusStats)
-            {
-                LogLine($"Status {hs.status}: {hs.num}");
-            }
-        }
-        LogLine("");
-    }
-
-    private string GetEntityRecDiffs(string dbConn, string entityType)
-    {
-        string tableName = (entityType == "study") ? "sd.to_ad_study_recs" : "sd.to_ad_object_recs";
-        string sqlString = $@"select count(*) from {tableName} 
-                              where {entityType}_rec_status = 2;";
-        using NpgsqlConnection conn = new(dbConn);
-        int res = conn.ExecuteScalar<int>(sqlString);
-        return $"{res} records found with edits to the {entityType} record itself;";
-    }
-
-    private string GetDatasetRecDiffs(string dbConn)
-    {
-        string sqlString = @"select count(*) from sd.to_ad_object_recs
-                             where object_dataset_status = 4;";
-        using NpgsqlConnection conn = new(dbConn);
-        int res = conn.ExecuteScalar<int>(sqlString);
-        return $"{res} records found with edits to the dataset data;";
-    }
-
     private void Transmit(string message)
     {
         _sw!.WriteLine(message);
@@ -298,13 +222,12 @@ public class LoggingHelper : ILoggingHelper
     }
 
 
-
-    public string GetTableRecordCount(string dbConn, string schema, string tableName)
+    private string GetTableRecordCount(string dbConn, string schema, string tableName)
     {
         string sqlString = "select count(*) from " + schema + "." + tableName;
 
         using NpgsqlConnection conn = new NpgsqlConnection(dbConn);
         int res = conn.ExecuteScalar<int>(sqlString);
-        return res.ToString() + " records found in " + schema + "." + tableName;
+        return res + " records found in " + schema + "." + tableName;
     }
 }

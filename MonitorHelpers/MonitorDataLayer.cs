@@ -11,13 +11,13 @@ public class MonDataLayer : IMonDataLayer
     public MonDataLayer(ICredentials credentials)
     {
         _credentials = credentials;
-        monConnString = credentials.GetConnectionString("mon", false);
+        monConnString = credentials.GetConnectionString("mon");
     }
 
     public Credentials Credentials => (Credentials)_credentials;
 
-    public string GetConnectionString(string database_name, bool using_test_data) =>
-                                     _credentials.GetConnectionString(database_name, using_test_data);
+    public string GetConnectionString(string database_name) =>
+                                     _credentials.GetConnectionString(database_name);
            
     public bool SourceIdPresent(int? sourceId)
     {

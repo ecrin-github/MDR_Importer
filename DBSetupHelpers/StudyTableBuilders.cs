@@ -209,7 +209,7 @@ public class StudyTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL
         );
-        CREATE INDEX study_conditions_sd_sid ON ad.study_conditions(sd_sid);";
+        CREATE INDEX study_conditions_sid ON ad.study_conditions(sd_sid);";
 
         Execute_SQL(sql_string);
     }
@@ -241,7 +241,7 @@ public class StudyTableBuilders
           , link_url               VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX study_links_sd_sid ON ad.study_links(sd_sid);";
+        CREATE INDEX study_links_sid ON ad.study_links(sd_sid);";
 
         Execute_SQL(sql_string);
     }
@@ -264,7 +264,7 @@ public class StudyTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL          
         );
-        CREATE INDEX study_locations_sd_sid ON ad.study_locations(sd_sid);";
+        CREATE INDEX study_locations_sid ON ad.study_locations(sd_sid);";
 
         Execute_SQL(sql_string);
     }
@@ -282,7 +282,7 @@ public class StudyTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL                                         
         );
-        CREATE INDEX study_countries_sd_sid ON ad.study_countries(sd_sid);";
+        CREATE INDEX study_countries_sid ON ad.study_countries(sd_sid);";
 
         Execute_SQL(sql_string);
     }
@@ -300,7 +300,7 @@ public class StudyTableBuilders
           , ipd_comment            VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX study_ipd_available_sd_sid ON ad.study_ipd_available(sd_sid);";
+        CREATE INDEX study_ipd_available_sid ON ad.study_ipd_available(sd_sid);";
 
         Execute_SQL(sql_string);
     }

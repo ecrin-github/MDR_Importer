@@ -5,13 +5,10 @@ internal class ParameterChecker
 {
     private readonly ILoggingHelper _loggingHelper;
     private readonly IMonDataLayer _monDataLayer;
-    private readonly ITestingDataLayer _testRepo;
 
-    public ParameterChecker(IMonDataLayer monDataLayer, ITestingDataLayer testRepo, 
-        ILoggingHelper loggingHelper)
+    public ParameterChecker(IMonDataLayer monDataLayer, ILoggingHelper loggingHelper)
     {
         _monDataLayer = monDataLayer;
-        _testRepo = testRepo;
         _loggingHelper = loggingHelper;
     }
     
@@ -40,23 +37,7 @@ internal class ParameterChecker
 
         try
         {
-            // If processing test data set the program should run but
-            // the set of correct source ids must be created. 
-            // If just doing a test result the program can be run in any case.
-            
-            if (opts.UsingTestData)
-            {
-                opts.SourceIds = _testRepo.ObtainTestSourceIDs();
-                return new ParamsCheckResult(false, false, opts); 
-            }
-            
-            if (opts.CreateTestReport)
-            {
-                return new ParamsCheckResult(false, false, opts);    
-            }
-            
-            // if a non test import there has to be some
-            // sources identified, and they all have to be valid.
+            // Some sources must identified, and they all have to be valid.
             
             if (opts.SourceIds?.Any() is not true)
             {
@@ -131,12 +112,6 @@ public class Options
 
     [Option('T', "build tables", Required = false, HelpText = "If present, forces the (re)creation of a new set of ad tables")]
     public bool RebuildAdTables { get; set; }
-
-    [Option('F', "is a test", Required = false, HelpText = "If present, operates on the sd / ad tables in the test database")]
-    public bool UsingTestData { get; set; }
-
-    [Option('G', "test report", Required = false, HelpText = "If present, compares and reports on adcomp and expected tables but does not recreate those tables")]
-    public bool CreateTestReport { get; set; }
 }
 
 

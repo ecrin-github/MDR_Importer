@@ -7,11 +7,13 @@ class DataDeleter
 {
     private readonly string _db_conn;
     private readonly ILoggingHelper _logging_helper;
+    private readonly  DBUtilities _dbu;
     
     public DataDeleter(string db_conn, ILoggingHelper logging_helper)
     {
         _db_conn = db_conn;
         _logging_helper = logging_helper;
+        _dbu = new DBUtilities(db_conn, logging_helper);
     }
     
     private readonly Dictionary<string, string> studyFields = new() 
@@ -99,21 +101,27 @@ class DataDeleter
         return conn.ExecuteScalar<int>(sql_string);
     }
     
-    public int DeleteStudyRecords(string table_name)
+    public int DeleteRecords(string table_type, string table_name)
     {
-        string sql_string = $@"delete from ad.{table_name} a
-             using sd.studies t
-             where a.sd_sid = t.sd_sid;";
-
-        using var conn = new NpgsqlConnection(_db_conn);
-        int res = conn.Execute(sql_string);
-        _logging_helper.LogLine($"Deleted {res} from ad.{table_name}");
+        string sql_string = $@"delete from ad.{table_name} s ";
+        if (table_type == "st")
+        {
+            sql_string +=  @"using sd.studies t
+             where s.sd_sid = t.sd_sid ";
+        }
+        else
+        {
+            sql_string += @" using sd.data_objects t
+             where s.sd_oid = t.sd_oid ";
+        }
+        int res = _dbu.ExecuteDeleteSQL(sql_string, table_name, 200000);
+        _logging_helper.LogLine($"Deleted {res} records from ad.{table_name}");
         
-        // if ad.table is empty reset the sequence number to 1
-        // Otherwise, and ad.table size < 90% of current max id...
-        // compact the sequence in the ad table before adding new records from sd
+        // if ad.table is empty reset the sequence number to 1. Otherwise, if ad.table size < 90%
+        // of current max id, compact the sequence in the ad table before adding new records from sd
 
         int ad_size = GetADRecordCount(table_name);
+        using var conn = new NpgsqlConnection(_db_conn);
         if (ad_size == 0)
         {
             sql_string = $"SELECT setval('ad.{table_name}_id_seq', 1) FROM ad.{table_name}"; 
@@ -124,118 +132,83 @@ class DataDeleter
             int next_id = GetNextSequenceValue(table_name);
             if (ad_size < 0.9 * next_id)
             {
-                string data_columns = table_name.StartsWith("study_iec")
-                    ? studyFields["study_iec"]
-                    : studyFields[table_name];
-                if (ad_size < 200000)
+                if (table_type == "st")
                 {
-                    CompactSequence(table_name, data_columns);
+                    string data_columns = table_name.StartsWith("study_iec")
+                        ? studyFields["study_iec"]
+                        : studyFields[table_name];
+                    CompactSequence(ad_size, next_id, table_name, data_columns, "sid");
                 }
                 else
                 {
-                    CompactBigTableSequence(ad_size, table_name, data_columns);
+                    CompactSequence(ad_size, next_id, table_name, objectFields[table_name], "oid");
                 }
             }
         }
-        
         return res;
     }
+           
     
-    public int DeleteObjectRecords(string table_name)
+    private void CompactSequence(int ad_size, int next_id, string table_name, string data_columns, string id_suffix)
     {
-        string sql_string = $@"delete from ad.{table_name} a
-             using sd.data_objects t
-             where a.sd_oid = t.sd_oid;";
-
-        using var conn = new NpgsqlConnection(_db_conn);
-        int res = conn.Execute(sql_string);
-        _logging_helper.LogLine($"Deleted {res} from ad.{table_name}");
-        
-        int ad_size = GetADRecordCount(table_name);
-        if (ad_size == 0)
-        {
-            sql_string = $"SELECT setval('ad.{table_name}_id_seq', 1) FROM ad.{table_name}"; 
-            conn.Execute(sql_string);
-        }
-        else
-        {
-            int next_id = GetNextSequenceValue(table_name);
-            if (ad_size < 0.9 * next_id)
-            {
-                if (ad_size < 200000)
-                {
-                    CompactSequence(table_name, objectFields[table_name]);
-                }
-                else
-                {
-                    CompactBigTableSequence(ad_size, table_name, objectFields[table_name]);
-                }
-            }
-        }
-
-        return res;
-
-    }
-
-    private void CompactSequence(string table_name, string data_columns)
-    {
-        // adapted from https://dba.stackexchange.com/questions/111823/compacting-a-sequence-in-postgresql
-        // changes are because dealing with identity columns rather than sequences
-        
-        // But method below does not work with very large tables - times out!
-        
-        
-        string tbl_new = table_name + "_new";
-        string sql_string = $@"BEGIN;
-        LOCK ad.{table_name};
-        CREATE TABLE IF NOT EXISTS ad.{tbl_new} (LIKE ad.{table_name} INCLUDING ALL);
-
-        INSERT INTO ad.{tbl_new} OVERRIDING SYSTEM VALUE        -- no target list in this case
-        SELECT row_number() OVER (ORDER BY id), {data_columns}  -- all columns in default order
-        FROM ad.{table_name};
-
-        DROP TABLE ad.{table_name};
-        ALTER TABLE ad.{tbl_new} RENAME TO {table_name};
-        ALTER SEQUENCE ad.{tbl_new}_id_seq RENAME TO {table_name}_id_seq;
-        SELECT setval('ad.{table_name}_id_seq', max(id)) FROM ad.{table_name};  -- reset sequence
-        COMMIT;";
-
-        using var conn = new NpgsqlConnection(_db_conn);
-        conn.Execute(sql_string);
-        _logging_helper.LogLine($"Compacted sequence for ad.{table_name}");
-    }
-    
-    private void CompactBigTableSequence(int ad_size, string table_name, string data_columns)
-    {
-        // adapted from https://dba.stackexchange.com/questions/111823/compacting-a-sequence-in-postgresql
-        // changes are because dealing with identity columns rather than sequences
-        
-        // For tables with more than 250,000 rows, for the moment...
-
         string tbl_new = table_name + "_new";
         string sql_string = $@"CREATE TABLE IF NOT EXISTS ad.{tbl_new} (LIKE ad.{table_name} INCLUDING ALL);";
-        
         using var conn = new NpgsqlConnection(_db_conn);
         conn.Execute(sql_string);
 
         int rec_batch = 200000;
-        for (int i = 0; i <= ad_size; i+= rec_batch)
+        if (ad_size > rec_batch)
         {
-            // Sends across all columns in default order
-            
+            for (int i = 0; i <= next_id; i += rec_batch)
+            {
+                // Sends across all columns in default order
+
+                sql_string = $@"INSERT INTO ad.{tbl_new} ({data_columns})  
+                SELECT {data_columns} 
+                FROM ad.{table_name} where id > {i} and id <= {i + rec_batch}
+                order by id;";
+                int e = i + rec_batch < next_id ? i + rec_batch - 1 : next_id;
+                int res = conn.Execute(sql_string);
+                _logging_helper.LogLine($"Transferring {res} records to ad.{tbl_new} from ad.{table_name}, ids {i} to {e}");
+            }
+        }
+        else
+        {
             sql_string = $@"INSERT INTO ad.{tbl_new} ({data_columns})  
-            SELECT {data_columns} 
-            FROM ad.{table_name} where id > {i} and id <= {i + rec_batch}
-            order by id;";
-            conn.Execute(sql_string);
+                SELECT {data_columns} 
+                FROM ad.{table_name} 
+                order by id;";
+            int res1 = conn.Execute(sql_string);
+            _logging_helper.LogLine($"Transferring {res1} records to ad.{tbl_new} from ad.{table_name}, as a single batch");
         }
 
         sql_string = $@"DROP TABLE ad.{table_name};
-        ALTER TABLE ad.{tbl_new} RENAME TO {table_name};
-        ALTER SEQUENCE ad.{tbl_new}_id_seq RENAME TO {table_name}_id_seq; ;
-        ALTER INDEX ad.{tbl_new}_sd_sid_idx RENAME TO {table_name}_sd_sid_idx;  ";
-        
+        ALTER TABLE ad.{tbl_new} RENAME TO {table_name};";
         conn.Execute(sql_string);
+
+        sql_string = $@"ALTER SEQUENCE ad.{tbl_new}_id_seq RENAME TO {table_name}_id_seq; 
+                     ALTER INDEX ad.{tbl_new}_sd_{id_suffix}_idx RENAME TO {table_name}_{id_suffix};" ;
+        conn.Execute(sql_string);
+        
+        // Some special cases that have two indexes, so an additional one to rename
+
+        if (table_name == "data_objects")
+        {
+            sql_string = $@"ALTER INDEX ad.{tbl_new}_sd_sid_idx RENAME TO {table_name}_sid;" ;
+            conn.Execute(sql_string);
+        }
+        if (table_name == "study_relationships")
+        {
+            sql_string = $@"ALTER INDEX ad.{tbl_new}_target_sd_sid_idx RENAME TO {table_name}_target_sid;" ;
+            conn.Execute(sql_string);
+        }
+        if (table_name == "object_relationships")
+        {
+            sql_string = $@"ALTER INDEX ad.{tbl_new}_target_sd_oid_idx RENAME TO {table_name}_target_oid;" ;
+            conn.Execute(sql_string);
+        }
+        
         _logging_helper.LogLine($"Compacted sequence for ad.{table_name}, to {ad_size} rows");
     }
 }
+

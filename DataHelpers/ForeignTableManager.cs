@@ -41,6 +41,7 @@ public class ForeignTableManager
             conn.Execute(sql_string);
             
             _logging_helper.LogLine("Foreign (mon) tables established in database");
+            _logging_helper.LogLine("");
         }
     }
 

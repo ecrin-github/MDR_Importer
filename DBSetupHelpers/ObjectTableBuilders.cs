@@ -50,8 +50,8 @@ public class ObjectTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL   
         );    
-        CREATE INDEX data_objects_sd_oid ON ad.data_objects(sd_oid);
-        CREATE INDEX data_objects_sd_sid ON ad.data_objects(sd_sid);";
+        CREATE INDEX data_objects_oid ON ad.data_objects(sd_oid);
+        CREATE INDEX data_objects_sid ON ad.data_objects(sd_sid);";
 
         Execute_SQL(sql_string);
     }
@@ -82,7 +82,7 @@ public class ObjectTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
 
-        CREATE INDEX object_datasets_sd_oid ON ad.object_datasets(sd_oid);";
+        CREATE INDEX object_datasets_oid ON ad.object_datasets(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -106,7 +106,7 @@ public class ObjectTableBuilders
           , details                VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX object_dates_sd_oid ON ad.object_dates(sd_oid);";
+        CREATE INDEX object_dates_oid ON ad.object_dates(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -130,7 +130,7 @@ public class ObjectTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL   
         );
-        CREATE INDEX object_instances_sd_oid ON ad.object_instances(sd_oid);";
+        CREATE INDEX object_instances_oid ON ad.object_instances(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -150,7 +150,7 @@ public class ObjectTableBuilders
           , comments               VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX object_titles_sd_oid ON ad.object_titles(sd_oid);";
+        CREATE INDEX object_titles_oid ON ad.object_titles(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -174,7 +174,7 @@ public class ObjectTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL   
         );
-        CREATE INDEX object_people_sd_oid ON ad.object_people(sd_oid);";
+        CREATE INDEX object_people_oid ON ad.object_people(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -193,7 +193,7 @@ public class ObjectTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL   
         );
-        CREATE INDEX object_organisations_sd_oid ON ad.object_organisations(sd_oid);";
+        CREATE INDEX object_organisations_oid ON ad.object_organisations(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -214,7 +214,7 @@ public class ObjectTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL   
         );
-        CREATE INDEX object_topics_sd_oid ON ad.object_topics(sd_oid);";
+        CREATE INDEX object_topics_oid ON ad.object_topics(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -233,7 +233,7 @@ public class ObjectTableBuilders
           , notes                  VARCHAR         NULL 
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX object_comments_sd_oid ON ad.object_comments(sd_oid);";
+        CREATE INDEX object_comments_oid ON ad.object_comments(sd_oid);";
 
         Execute_SQL(sql_string); 
     }
@@ -251,7 +251,7 @@ public class ObjectTableBuilders
           , lang_code              VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX object_descriptions_sd_oid ON ad.object_descriptions(sd_oid);";
+        CREATE INDEX object_descriptions_oid ON ad.object_descriptions(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -271,7 +271,7 @@ public class ObjectTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL   
         );
-        CREATE INDEX object_identifiers_sd_oid ON ad.object_identifiers(sd_oid);";
+        CREATE INDEX object_identifiers_oid ON ad.object_identifiers(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -288,7 +288,7 @@ public class ObjectTableBuilders
           , id_in_db               VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX object_db_links_sd_oid ON ad.object_db_links(sd_oid);";
+        CREATE INDEX object_db_links_oid ON ad.object_db_links(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -303,7 +303,7 @@ public class ObjectTableBuilders
           , type_name              VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX object_publication_types_sd_oid ON ad.object_publication_types(sd_oid);";
+        CREATE INDEX object_publication_types_oid ON ad.object_publication_types(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -320,7 +320,7 @@ public class ObjectTableBuilders
           , comments               VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX object_rights_sd_oid ON ad.object_rights(sd_oid);";
+        CREATE INDEX object_rights_oid ON ad.object_rights(sd_oid);";
 
         Execute_SQL(sql_string);
     }
@@ -336,8 +336,8 @@ public class ObjectTableBuilders
           , target_sd_oid          VARCHAR         NULL
           , added_on               TIMESTAMPTZ     NOT NULL default now()
         );
-        CREATE INDEX object_relationships_sd_oid ON ad.object_relationships(sd_oid);";
-
+        CREATE INDEX object_relationships_oid ON ad.object_relationships(sd_oid);
+        CREATE INDEX object_relationships_target_oid ON ad.object_relationships(target_sd_oid);";
         Execute_SQL(sql_string);
     }
     
@@ -358,7 +358,7 @@ public class ObjectTableBuilders
           , added_on               TIMESTAMPTZ     NOT NULL default now()
           , coded_on               TIMESTAMPTZ     NULL   
         );
-        CREATE INDEX journal_details_sd_oid ON ad.journal_details(sd_oid);";
+        CREATE INDEX journal_details_oid ON ad.journal_details(sd_oid);";
 
         Execute_SQL(sql_string);
     }

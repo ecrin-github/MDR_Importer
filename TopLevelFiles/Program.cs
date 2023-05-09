@@ -34,7 +34,6 @@ IHost host = Host.CreateDefaultBuilder()
         services.AddSingleton<ICredentials, Credentials>();
         services.AddSingleton<ILoggingHelper, LoggingHelper>();
         services.AddSingleton<IMonDataLayer, MonDataLayer>();        
-        services.AddSingleton<ITestingDataLayer, TestingDataLayer>();
     })
     .Build();
 
@@ -46,14 +45,13 @@ IHost host = Host.CreateDefaultBuilder()
 LoggingHelper loggingHelper = ActivatorUtilities.CreateInstance<LoggingHelper>(host.Services);
 Credentials credentials = ActivatorUtilities.CreateInstance<Credentials>(host.Services);
 MonDataLayer monDataLayer = new(credentials);
-TestingDataLayer testDataLayer = new(credentials, loggingHelper);
 
 // Establish the parameter checker, which first checks if the program's 
 // arguments can be parsed and, if they can, then checks if they are valid.
 // If both tests are passed the object returned includes both the
 // original arguments and the 'source' object or objects being imported.
 
-ParameterChecker paramChecker = new(monDataLayer, testDataLayer, loggingHelper);
+ParameterChecker paramChecker = new(monDataLayer, loggingHelper);
 ParamsCheckResult paramsCheck = paramChecker.CheckParams(args);
 if (paramsCheck.ParseError || paramsCheck.ValidityError)
 {
@@ -71,16 +69,9 @@ if (paramsCheck.ParseError || paramsCheck.ValidityError)
 try
 {
     var opts = paramsCheck.Pars!;
-    if (opts.UsingTestData || opts.CreateTestReport)
-    {
-        TestImporter testImporter = new(monDataLayer, testDataLayer, loggingHelper);
-        testImporter.Run(opts);
-    }
-    else
-    {
-        Importer importer = new(monDataLayer, loggingHelper);
-        importer.Run(opts);
-    }
+    Importer importer = new(monDataLayer, loggingHelper);
+    importer.Run(opts);
+
     
     return 0;
 }
