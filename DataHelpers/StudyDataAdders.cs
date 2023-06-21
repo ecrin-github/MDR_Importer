@@ -42,7 +42,7 @@ class StudyDataAdder
           sequence_string, iec_text" }
     };
     
-    public void AddData(string table_name)
+    public int AddData(string table_name)
     {
         string fields = addFields[table_name];
         
@@ -55,12 +55,12 @@ class StudyDataAdder
         {
             rec_batch = 100000;
         }
-        _dbu.ExecuteTransferSQL(sql_string, table_name, rec_batch);
+        return _dbu.ExecuteTransferSQL(sql_string, table_name, rec_batch);
     }
 
-    public void AddIECData(string fields_name, string table_name)
+    public void AddIECData(string table_name)
     {
-        string fields = addFields[fields_name];
+        string fields = addFields["study_iec"];
         
         string sql_string = $@"INSERT INTO ad.{table_name} ({fields})
         SELECT {fields}

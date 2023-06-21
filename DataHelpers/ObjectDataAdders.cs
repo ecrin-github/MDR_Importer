@@ -44,7 +44,7 @@ class ObjectDataAdder
     };
 
     
-    public void AddDataObjects()
+    public int AddDataObjects()
     {
         string sql_string = @"INSERT INTO ad.data_objects(sd_oid, sd_sid, 
         title, version, display_title, doi, doi_status_id, publication_year,
@@ -58,7 +58,7 @@ class ObjectDataAdder
         eosc_category, add_study_contribs, add_study_topics, datetime_of_data_fetch
         FROM sd.data_objects s ";
 
-        _dbu.ExecuteTransferSQL(sql_string, "data_objects", 100000);
+        return _dbu.ExecuteTransferSQL(sql_string, "data_objects", 100000);
     }
 
     public void AddData(string table_name)
