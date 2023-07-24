@@ -9,6 +9,7 @@ class StudyDataDeleter
     private readonly ILoggingHelper _logging_helper;
     private readonly  DBUtilities _dbu;
     private readonly  bool _newTables;
+    private readonly FieldLists fl;
     
     public StudyDataDeleter(string db_conn, ILoggingHelper logging_helper, bool newTables)
     {
@@ -16,40 +17,8 @@ class StudyDataDeleter
         _logging_helper = logging_helper;
         _newTables = newTables;
         _dbu = new DBUtilities(db_conn, logging_helper);
+        fl = new FieldLists();
     }
-    
-    private readonly Dictionary<string, string> studyFields = new() 
-    {
-        { "studies", @"sd_sid, display_title, 
-        title_lang_code, brief_description, data_sharing_statement,
-        study_start_year, study_start_month, study_type_id, 
-        study_status_id, study_enrolment, study_gender_elig_id, min_age, 
-        min_age_units_id, max_age, max_age_units_id, iec_level, datetime_of_data_fetch, added_on" },
-        { "study_identifiers", @"sd_sid, identifier_value, identifier_type_id, 
-        source_id, source, source_ror_id, identifier_date, identifier_link, added_on, coded_on" },
-        { "study_titles", @"sd_sid, title_type_id, title_text, lang_code, lang_usage_id,
-        is_default, comments, added_on" },
-        { "study_references", @"sd_sid, pmid, citation, doi, type_id, comments, added_on" },
-        { "study_people", @"sd_sid, contrib_type_id, person_given_name, 
-        person_family_name, person_full_name, orcid_id, person_affiliation, organisation_id, 
-        organisation_name, organisation_ror_id, added_on, coded_on" },
-        { "study_organisations", @"sd_sid, contrib_type_id, organisation_id, 
-        organisation_name, organisation_ror_id, added_on, coded_on" },
-        { "study_topics", @"sd_sid, topic_type_id, original_value, original_ct_type_id, 
-        original_ct_code, mesh_code, mesh_value, added_on, coded_on" },
-        { "study_relationships", @"sd_sid, relationship_type_id, target_sd_sid, added_on" },
-        { "study_features", @"sd_sid, feature_type_id, feature_value_id, added_on" },
-        { "study_links", @"sd_sid, link_label, link_url, added_on" },
-        { "study_countries", @"sd_sid, country_id, country_name, status_id, added_on, coded_on" },
-        { "study_locations", @"sd_sid, facility_org_id, facility, facility_ror_id, 
-        city_id, city_name, country_id, country_name, status_id, added_on, coded_on" },
-        { "study_ipd_available", @"sd_sid, ipd_id, ipd_type, ipd_url, ipd_comment, added_on" },
-        { "study_conditions", @"sd_sid, original_value, original_ct_type_id, original_ct_code, 
-        icd_code, icd_name, added_on, coded_on" },
-        { "study_iec", @"sd_sid, seq_num, iec_type_id, split_type, leader, indent_level, 
-        sequence_string, iec_text, iec_class_id, iec_class, iec_parsed_text, added_on, coded_on" }
-    };
-    
     
     public int GetADRecordCount(string table_name)
     {
@@ -89,8 +58,8 @@ class StudyDataDeleter
             if (ad_size < 0.9 * max_id)
             {
                 string data_columns = table_name.StartsWith("study_iec")
-                    ? studyFields["study_iec"]
-                    : studyFields[table_name];
+                    ? fl.delStudyFields["study_iec"]
+                    : fl.delStudyFields[table_name];
                 CompactSequence(ad_size, max_id, table_name, data_columns);
                 
             }

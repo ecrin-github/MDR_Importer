@@ -9,6 +9,7 @@ class ObjectDataDeleter
     private readonly ILoggingHelper _logging_helper;
     private readonly  DBUtilities _dbu;
     private readonly  bool _newTables;
+    private readonly FieldLists fl;
     
     public ObjectDataDeleter(string db_conn, ILoggingHelper logging_helper, bool newTables)
     {
@@ -16,46 +17,8 @@ class ObjectDataDeleter
         _logging_helper = logging_helper;
         _newTables = newTables;
         _dbu = new DBUtilities(db_conn, logging_helper);
+        fl = new FieldLists();
     }
-    
-    private readonly Dictionary<string, string> objectFields = new() 
-    {
-        { "data_objects", @"sd_oid, sd_sid, 
-        title, version, display_title, doi, doi_status_id, publication_year,
-        object_class_id, object_type_id, 
-        managing_org_id, managing_org, managing_org_ror_id, lang_code, access_type_id,
-        access_details, access_details_url, url_last_checked, eosc_category, add_study_contribs,
-        add_study_topics, datetime_of_data_fetch, added_on, coded_on" },
-        { "object_datasets", @"sd_oid, record_keys_type_id, record_keys_details, 
-        deident_type_id, deident_direct, deident_hipaa,
-        deident_dates, deident_nonarr, deident_kanon, deident_details,
-        consent_type_id, consent_noncommercial, consent_geog_restrict,
-        consent_research_type, consent_genetic_only, consent_no_methods, consent_details, added_on" },
-        { "object_instances", @"sd_oid, system_id, system,
-        url, url_accessible, url_last_checked, resource_type_id,
-        resource_size, resource_size_units, resource_comments, added_on, coded_on " },
-        { "object_titles", @"sd_oid, title_type_id, title_text, lang_code,
-        lang_usage_id, is_default, comments, added_on" },
-        { "object_dates", @"sd_oid, date_type_id, date_is_range, date_as_string, start_year, 
-        start_month, start_day, end_year, end_month, end_day, details, added_on" },
-        { "object_people", @"sd_oid, contrib_type_id, person_given_name, 
-        person_family_name, person_full_name, orcid_id, person_affiliation, organisation_id, 
-        organisation_name, organisation_ror_id, added_on, coded_on" },
-        { "object_organisations", @"sd_oid, contrib_type_id, organisation_id, 
-        organisation_name, organisation_ror_id, added_on, coded_on" },
-        { "object_topics", @"sd_oid, topic_type_id, original_value, original_ct_type_id,
-         original_ct_code, mesh_code, mesh_value, added_on, coded_on" },
-        { "object_comments", @"sd_oid, ref_type, ref_source, pmid, pmid_version, notes, added_on" },
-        { "object_descriptions", @"sd_oid, description_type_id, label, description_text, lang_code, added_on" },
-        { "object_identifiers", @"sd_oid, identifier_value, identifier_type_id, 
-        source_id, source, source_ror_id, identifier_date, added_on, coded_on" },
-        { "object_db_links", @"sd_oid, db_sequence, db_name, id_in_db, added_on" },
-        { "object_publication_types", @"sd_oid, type_name, added_on" },
-        { "object_rights", @"sd_oid, rights_name, rights_uri, comments, added_on" },
-        { "object_relationships", @"sd_oid, relationship_type_id, target_sd_oid, added_on" },
-        { "journal_details", @"sd_oid, pissn, eissn, journal_title, publisher_id, 
-        publisher, added_on, coded_on" }
-    };
     
     public int GetADRecordCount(string table_name)
     {
@@ -94,7 +57,7 @@ class ObjectDataDeleter
             int max_id = _dbu.GetADRecordMax(table_name);
             if (ad_size < 0.9 * max_id)
             {
-                CompactSequence(ad_size, max_id, table_name, objectFields[table_name]);
+                CompactSequence(ad_size, max_id, table_name, fl.delObjectFields[table_name]);
             }
         }
         return res;

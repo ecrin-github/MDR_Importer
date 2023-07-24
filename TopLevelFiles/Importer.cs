@@ -10,7 +10,7 @@ public class Importer
         _monDataLayer = monDataLayer;
         _loggingHelper = loggingHelper;
     }
-    
+
     public void Run(Options opts)
     {
         try
@@ -22,18 +22,25 @@ public class Importer
                 // Obtain source details, augment with connection string for this database
                 // Open up the logging file for this source and then call the main 
                 // import routine. After initial checks source is guaranteed to be non-null.
-                    
+
                 Source source = _monDataLayer.FetchSourceParameters(sourceId)!;
                 string dbName = source.database_name!;
                 source.db_conn = _monDataLayer.GetConnectionString(dbName);
-                
+
                 _loggingHelper.OpenLogFile(source.database_name!);
                 _loggingHelper.LogHeader("STARTING IMPORTER");
                 _loggingHelper.LogCommandLineParameters(opts);
                 _loggingHelper.LogStudyHeader(opts, "For source: " + source.id + ": " + dbName);
-                
-                ImportData(source, opts);
-                
+
+                if (!opts.UseTestDataOnly)
+                {
+                    ImportData(source, opts);
+                }
+                else
+                {
+                    ImportTestDataOnly(source);
+                }
+
                 _loggingHelper.CloseLog();
             }
         }
@@ -46,6 +53,7 @@ public class Importer
         }
     }
 
+
     private void ImportData(Source source, Options opts)
     {
         // Recreate ad tables if necessary.
@@ -56,17 +64,17 @@ public class Importer
             AdBuilder adb = new AdBuilder(source, _loggingHelper);
             adb.BuildNewAdTables();
         }
-        
+
         // Establish monitoring schema as foreign tables and the transfer manager class
         // that orchestrates the transfer, then create import event log record.
-        
+
         _loggingHelper.LogHeader("Start Import Process");
         ForeignTableManager ftm = new ForeignTableManager(source, _loggingHelper);
         ftm.EstablishForeignMonTables(_monDataLayer.Credentials);
         DataTransferManager dtm = new DataTransferManager(source, opts.RebuildAdTables, _loggingHelper);
         int importId = _monDataLayer.GetNextImportEventId();
-        ImportEvent import = dtm.CreateImportEvent(importId, opts.RebuildAdTables);     
-        
+        ImportEvent import = dtm.CreateImportEvent(importId, opts.RebuildAdTables);
+
         // Then import the study data (if present) followed by the object data. For details
         // see the transfer manager class and the adder / deleter classes for studies and objects.
 
@@ -74,12 +82,13 @@ public class Importer
         {
             dtm.ImportStudyData(import);
         }
+
         dtm.ImportObjectData(import);
         _loggingHelper.LogHeader("New data added to ad tables");
 
         // Tidy up - Update the 'date imported' record in the mon.source data tables.
         // Remove foreign tables and store import event.      
-        
+
         _loggingHelper.LogHeader("Tidy up and finish");
         if (source.has_study_tables is true)
         {
@@ -87,10 +96,38 @@ public class Importer
         }
         else
         {
-            ftm.UpdateObjectsImportedDateInMon(importId);   // only do if no studies (e.g. PubMed)
+            ftm.UpdateObjectsImportedDateInMon(importId); // only do if no studies (e.g. PubMed)
         }
+
         ftm.DropForeignMonTables();
         _monDataLayer.StoreImportEvent(import);
-    } 
+    }
+
+
+    private void ImportTestDataOnly(Source source)
+    {
+        TestHelper th = new TestHelper(source, _loggingHelper);
+        if (source.has_study_tables is true)
+        {
+            if (th.EstablishTempStudyTestList() > 0)
+            {
+                th.DeleteCurrentTestStudyData();
+                th.DeleteCurrentTestObjectData();
+                th.ImportTestStudyData();
+                th.ImportTestObjectData();
+            }
+        }
+        else
+        {
+            if (th.EstablishTempObjectTestList() > 0)
+            {
+                th.DeleteCurrentTestObjectData();
+                th.ImportTestObjectData();
+            }
+        }
+
+        th.TeardownTempTestDataTables();
+    }
+    
 }
 

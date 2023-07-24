@@ -112,6 +112,9 @@ public class Options
 
     [Option('T', "build tables", Required = false, HelpText = "If present, forces the (re)creation of a new set of ad tables")]
     public bool RebuildAdTables { get; set; }
+    
+    [Option('M', "import test data only", Required = false, HelpText = "If present, replaces test data in the ad tables (if present in sd tables)")]
+    public bool UseTestDataOnly { get; set; }
 }
 
 
