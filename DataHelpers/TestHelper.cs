@@ -170,10 +170,14 @@ public class TestHelper
         _loggingHelper.LogLine("Object test data deleted");
     }
     
-    private void import_study_test_recs(string schema_name, string table_name)
+    private void import_study_test_recs(string schema_name, string table_name, string template_table = "")
     {
-        string fields = fl.addStudyFields[table_name];
-        string insert_fields = fl.addStudyFields_insert[table_name];
+        if (template_table == "")
+        {
+            template_table = table_name;
+        }
+        string fields = fl.addStudyFields[template_table];
+        string insert_fields = fl.addStudyFields_insert[template_table];
         
         string sql_string = $@"INSERT INTO {schema_name}.{table_name} ({fields})
         SELECT {insert_fields}
@@ -225,22 +229,22 @@ public class TestHelper
 
             if (_source.study_iec_storage_type == "By Year Groupings")
             {
-                import_study_test_recs("ad", "study_iec_upto12");
-                import_study_test_recs("ad", "study_iec_13to19");
-                import_study_test_recs("ad", "study_iec_20on");
+                import_study_test_recs("ad", "study_iec_upto12", "study_iec");
+                import_study_test_recs("ad", "study_iec_13to19", "study_iec");
+                import_study_test_recs("ad", "study_iec_20on", "study_iec");
             }
 
             if (_source.study_iec_storage_type == "By Years")
             {
-                import_study_test_recs("ad", "study_iec_null");
-                import_study_test_recs("ad", "study_iec_pre06");
-                import_study_test_recs("ad", "study_iec_0608");
-                import_study_test_recs("ad", "study_iec_0910");
-                import_study_test_recs("ad", "study_iec_1112");
-                import_study_test_recs("ad", "study_iec_1314");
+                import_study_test_recs("ad", "study_iec_null", "study_iec");
+                import_study_test_recs("ad", "study_iec_pre06", "study_iec");
+                import_study_test_recs("ad", "study_iec_0608", "study_iec");
+                import_study_test_recs("ad", "study_iec_0910", "study_iec");
+                import_study_test_recs("ad", "study_iec_1112", "study_iec");
+                import_study_test_recs("ad", "study_iec_1314", "study_iec");
                 for (int i = 15; i <= 30; i++)
                 {
-                    import_study_test_recs("ad", $"study_iec_{i}");
+                    import_study_test_recs("ad", $"study_iec_{i}", "study_iec");
                 }
             }
         }
