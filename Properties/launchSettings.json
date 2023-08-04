@@ -6,7 +6,7 @@
       "environmentVariables": {
         
       },
-      "commandLineArgs": "-s \"100126\" -M"
+      "commandLineArgs": "-s \"100126\" -T"
     }
   }
 }
