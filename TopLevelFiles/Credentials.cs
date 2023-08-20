@@ -22,7 +22,8 @@ public class Credentials : ICredentials
             Host = _host,
             Username = Username,
             Password = Password,
-            Database = database_name
+            Database = database_name,
+            KeepAlive = 300
         };
         return builder.ConnectionString;
     }

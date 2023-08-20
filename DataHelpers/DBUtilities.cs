@@ -39,7 +39,6 @@ class DBUtilities
         try
         {
             int id_max = GetSDRecordMax(table_name);
-            // int rec_batch = 10000;  // for testing 
             int added = 0;
             if (id_max > rec_batch)
             {

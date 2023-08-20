@@ -71,17 +71,18 @@ try
     var opts = paramsCheck.Pars!;
     Importer importer = new(monDataLayer, loggingHelper);
     importer.Run(opts);
-
-    
     return 0;
 }
+
 catch (Exception e)
 {
     // If an error bubbles up to here there is an unexpected issue with the code.
     // A file should normally have been created (but just in case...).
 
     loggingHelper.LogHeader("UNHANDLED EXCEPTION");
-    loggingHelper.LogCodeError("MDR_Importer application aborted", e.Message, e.StackTrace);
+    string message = (e.InnerException is null) ? e.Message
+        : e.Message + "\nInnerException Message:\n" + e.InnerException.Message;
+    loggingHelper.LogCodeError("MDR_Importer application aborted", message, e.StackTrace);
     loggingHelper.CloseLog();
     return -1;
 }

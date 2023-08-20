@@ -13,42 +13,32 @@ public class Importer
 
     public void Run(Options opts)
     {
-        try
-        {
-            // Simply import the data for each listed source.
+        // Simply import the data for each listed source.
 
-            foreach (int sourceId in opts.SourceIds!)
+        foreach (int sourceId in opts.SourceIds!)
+        {
+            // Obtain source details, augment with connection string for this database
+            // Open up the logging file for this source and then call the main 
+            // import routine. After initial checks source is guaranteed to be non-null.
+
+            Source source = _monDataLayer.FetchSourceParameters(sourceId)!;
+            string dbName = source.database_name!;
+            source.db_conn = _monDataLayer.GetConnectionString(dbName);
+
+            _loggingHelper.OpenLogFile(source.database_name!);
+            _loggingHelper.LogHeader("STARTING IMPORTER");
+            _loggingHelper.LogCommandLineParameters(opts);
+            _loggingHelper.LogStudyHeader(opts, "For source: " + source.id + ": " + dbName);
+
+            if (!opts.UseTestDataOnly)
             {
-                // Obtain source details, augment with connection string for this database
-                // Open up the logging file for this source and then call the main 
-                // import routine. After initial checks source is guaranteed to be non-null.
-
-                Source source = _monDataLayer.FetchSourceParameters(sourceId)!;
-                string dbName = source.database_name!;
-                source.db_conn = _monDataLayer.GetConnectionString(dbName);
-
-                _loggingHelper.OpenLogFile(source.database_name!);
-                _loggingHelper.LogHeader("STARTING IMPORTER");
-                _loggingHelper.LogCommandLineParameters(opts);
-                _loggingHelper.LogStudyHeader(opts, "For source: " + source.id + ": " + dbName);
-
-                if (!opts.UseTestDataOnly)
-                {
-                    ImportData(source, opts);
-                }
-                else
-                {
-                    ImportTestDataOnly(source);
-                }
-
-                _loggingHelper.CloseLog();
+                ImportData(source, opts);
             }
-        }
+            else
+            {
+                ImportTestDataOnly(source);
+            }
 
-        catch (Exception e)
-        {
-            _loggingHelper.LogHeader("UNHANDLED EXCEPTION");
-            _loggingHelper.LogCodeError("Importer application aborted", e.Message, e.StackTrace);
             _loggingHelper.CloseLog();
         }
     }
