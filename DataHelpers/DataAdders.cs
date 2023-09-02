@@ -32,7 +32,7 @@ class DataAdder
     public void AddIECData(string table_name)
     {
         string fields = fl.addStudyFields["study_iec"];
-        string insert_fields = fl.addStudyFields_insert[table_name];
+        string insert_fields = fl.addStudyFields_insert["study_iec"];
         
         string sql_string = $@"INSERT INTO ad.{table_name} ({fields})
         SELECT {insert_fields}
