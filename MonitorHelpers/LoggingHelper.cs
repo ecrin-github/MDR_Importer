@@ -198,23 +198,21 @@ public class LoggingHelper : ILoggingHelper
 
         if (s.has_object_datasets is true) LogLine(GetTableRecordCount(dbConn, schema, "object_datasets"));
         if (s.has_object_dates is true) LogLine(GetTableRecordCount(dbConn, schema, "object_dates"));
+        if (s.has_object_instances is true) LogLine(GetTableRecordCount(dbConn, schema, "object_instances"));
+
+        if (s.has_object_people is true) LogLine(GetTableRecordCount(dbConn, schema, "object_people"));
+        if (s.has_object_organisations is true) LogLine(GetTableRecordCount(dbConn, schema, "object_organisations"));
+        if (s.has_object_topics is true) LogLine(GetTableRecordCount(dbConn, schema, "object_topics"));
+        if (s.has_object_comments is true) LogLine(GetTableRecordCount(dbConn, schema, "object_comments"));
+        if (s.has_object_descriptions is true) LogLine(GetTableRecordCount(dbConn, schema, "object_descriptions"));
+        if (s.has_object_identifiers is true) LogLine(GetTableRecordCount(dbConn, schema, "object_identifiers"));
+        if (s.has_object_db_links is true) LogLine(GetTableRecordCount(dbConn, schema, "object_db_links"));
+        if (s.has_object_publication_types is true) LogLine(GetTableRecordCount(dbConn, schema, "object_publication_types"));
+        if (s.has_journal_details is true) LogLine(GetTableRecordCount(dbConn, schema, "journal_details"));
         if (s.has_object_relationships is true) LogLine(GetTableRecordCount(dbConn, schema, "object_relationships"));
         if (s.has_object_rights is true) LogLine(GetTableRecordCount(dbConn, schema, "object_rights"));
-        if (s.has_object_pubmed_set is true)
-        {
-            LogLine(GetTableRecordCount(dbConn, schema, "citation_objects"));
-            LogLine(GetTableRecordCount(dbConn, schema, "object_people"));
-            LogLine(GetTableRecordCount(dbConn, schema, "object_organisations"));
-            LogLine(GetTableRecordCount(dbConn, schema, "object_topics"));
-            LogLine(GetTableRecordCount(dbConn, schema, "object_comments"));
-            LogLine(GetTableRecordCount(dbConn, schema, "object_descriptions"));
-            LogLine(GetTableRecordCount(dbConn, schema, "object_identifiers"));
-            LogLine(GetTableRecordCount(dbConn, schema, "object_db_links"));
-            LogLine(GetTableRecordCount(dbConn, schema, "object_publication_types"));
-        }
     }
-    
-    
+
     private void Transmit(string message)
     {
         _sw!.WriteLine(message);

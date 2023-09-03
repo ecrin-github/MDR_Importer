@@ -148,26 +148,24 @@ public class TestHelper
 
         delete_object_test_recs("data_objects");
         delete_object_test_recs("object_titles");
-        delete_object_test_recs("object_instances");
-
+        
         // these are database dependent		
 
         if (_source.has_object_datasets is true) delete_object_test_recs("object_datasets");
         if (_source.has_object_dates is true) delete_object_test_recs("object_dates");
+        if (_source.has_object_instances is true) delete_object_test_recs("object_instances");
+        if (_source.has_object_people is true) delete_object_test_recs("object_people");
+        if (_source.has_object_organisations is true) delete_object_test_recs("object_organisations");
+        if (_source.has_object_topics is true) delete_object_test_recs("object_topics");
+        if (_source.has_object_comments is true) delete_object_test_recs("object_comments");
+        if (_source.has_object_descriptions is true) delete_object_test_recs("object_descriptions");
+        if (_source.has_object_identifiers is true) delete_object_test_recs("object_identifiers");
+        if (_source.has_object_db_links is true) delete_object_test_recs("object_db_links");
+        if (_source.has_object_publication_types is true) delete_object_test_recs("object_publication_types");
+        if (_source.has_journal_details is true) delete_object_test_recs("journal_details");
         if (_source.has_object_relationships is true) delete_object_test_recs("object_relationships");
         if (_source.has_object_rights is true) delete_object_test_recs("object_rights");
-        if (_source.has_object_pubmed_set is true)
-        {
-            delete_object_test_recs("object_people");
-            delete_object_test_recs("object_organisations");
-            delete_object_test_recs("object_topics");
-            delete_object_test_recs("object_comments");
-            delete_object_test_recs("object_descriptions");
-            delete_object_test_recs("object_identifiers");
-            delete_object_test_recs("object_db_links");
-            delete_object_test_recs("object_publication_types");
-            delete_object_test_recs("journal_details");
-        }
+        
         _logging_helper.LogLine("Object test data deleted");
     }
     
@@ -261,26 +259,24 @@ public class TestHelper
 
         import_object_test_recs("data_objects");
         import_object_test_recs("object_titles");
-        import_object_test_recs("object_instances");
 
         // these are database dependent		
 
         if (_source.has_object_datasets is true) import_object_test_recs("object_datasets");
         if (_source.has_object_dates is true) import_object_test_recs("object_dates");
+        if (_source.has_object_instances is true) import_object_test_recs("object_instances");       
+        if (_source.has_object_people is true) import_object_test_recs("object_people");
+        if (_source.has_object_organisations is true) import_object_test_recs("object_organisations");
+        if (_source.has_object_topics is true) import_object_test_recs("object_topics");
+        if (_source.has_object_comments is true) import_object_test_recs("object_comments");
+        if (_source.has_object_descriptions is true) import_object_test_recs("object_descriptions");
+        if (_source.has_object_identifiers is true) import_object_test_recs("object_identifiers");
+        if (_source.has_object_db_links is true) import_object_test_recs("object_db_links");
+        if (_source.has_object_publication_types is true) import_object_test_recs("object_publication_types");
+        if (_source.has_journal_details is true) import_object_test_recs("journal_details");
         if (_source.has_object_relationships is true) import_object_test_recs("object_relationships");
         if (_source.has_object_rights is true) import_object_test_recs("object_rights");
-        if (_source.has_object_pubmed_set is true)
-        {
-            import_object_test_recs("object_people");
-            import_object_test_recs("object_organisations");
-            import_object_test_recs("object_topics");
-            import_object_test_recs("object_comments");
-            import_object_test_recs("object_descriptions");
-            import_object_test_recs("object_identifiers");
-            import_object_test_recs("object_db_links");
-            import_object_test_recs("object_publication_types");
-            import_object_test_recs("journal_details");
-        }
+        
         _logging_helper.LogLine("Object test data added");
     }
 

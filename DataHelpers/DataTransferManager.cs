@@ -156,9 +156,6 @@ class DataTransferManager
     {
         _objectDeleter.DeleteRecords("data_objects");
         import.num_sd_objects = _dataAdder.AddObjectData("data_objects");
-        
-        _objectDeleter.DeleteRecords("object_instances");
-        _dataAdder.AddObjectData("object_instances");
         _objectDeleter.DeleteRecords("object_titles");
         _dataAdder.AddObjectData("object_titles");
 
@@ -169,6 +166,12 @@ class DataTransferManager
             _objectDeleter.DeleteRecords("object_datasets");
             _dataAdder.AddObjectData("object_datasets");
         }
+        
+        if (_source.has_object_instances is true)
+        {
+            _objectDeleter.DeleteRecords("object_instances");
+            _dataAdder.AddObjectData("object_instances");
+        }
 
         if (_source.has_object_dates is true)
         {
@@ -176,6 +179,60 @@ class DataTransferManager
             _dataAdder.AddObjectData("object_dates");
         }
 
+        if (_source.has_object_people is true)
+        {
+            _objectDeleter.DeleteRecords("object_people");
+            _dataAdder.AddObjectData("object_people");
+        }
+
+        if (_source.has_object_organisations is true)
+        {
+            _objectDeleter.DeleteRecords("object_organisations");
+            _dataAdder.AddObjectData("object_organisations");
+        }
+
+        if (_source.has_object_topics is true)
+        {
+            _objectDeleter.DeleteRecords("object_topics");
+            _dataAdder.AddObjectData("object_topics");
+        }
+
+        if (_source.has_object_comments is true)
+        {
+            _objectDeleter.DeleteRecords("object_comments");
+            _dataAdder.AddObjectData("object_comments");
+        }
+
+        if (_source.has_object_descriptions is true)
+        {
+            _objectDeleter.DeleteRecords("object_descriptions");
+            _dataAdder.AddObjectData("object_descriptions");
+        }
+
+        if (_source.has_object_identifiers is true)
+        {
+            _objectDeleter.DeleteRecords("object_identifiers");
+            _dataAdder.AddObjectData("object_identifiers");
+        }
+
+        if (_source.has_object_db_links is true)
+        {
+            _objectDeleter.DeleteRecords("object_db_links");
+            _dataAdder.AddObjectData("object_db_links");
+        }
+
+        if (_source.has_object_publication_types is true)
+        {
+            _objectDeleter.DeleteRecords("object_publication_types");
+            _dataAdder.AddObjectData("object_publication_types");
+        }
+
+        if (_source.has_journal_details is true)
+        {
+            _objectDeleter.DeleteRecords("journal_details");
+            _dataAdder.AddObjectData("journal_details");
+        }
+        
         if (_source.has_object_rights is true)
         {
             _objectDeleter.DeleteRecords("object_rights");
@@ -188,34 +245,5 @@ class DataTransferManager
             _dataAdder.AddObjectData("object_relationships");
         }
 
-        if (_source.has_object_pubmed_set is true)
-        {
-            _objectDeleter.DeleteRecords("object_people");
-            _dataAdder.AddObjectData("object_people");
-            
-            _objectDeleter.DeleteRecords("object_organisations");
-            _dataAdder.AddObjectData("object_organisations");
-            
-            _objectDeleter.DeleteRecords("object_topics");
-            _dataAdder.AddObjectData("object_topics");
-            
-            _objectDeleter.DeleteRecords("object_comments");
-            _dataAdder.AddObjectData("object_comments");
-            
-            _objectDeleter.DeleteRecords("object_descriptions");
-            _dataAdder.AddObjectData("object_descriptions");
-            
-            _objectDeleter.DeleteRecords("object_identifiers");
-            _dataAdder.AddObjectData("object_identifiers");
-            
-            _objectDeleter.DeleteRecords("object_db_links");
-            _dataAdder.AddObjectData("object_db_links");
-            
-            _objectDeleter.DeleteRecords("object_publication_types");
-            _dataAdder.AddObjectData("object_publication_types");
-            
-            _objectDeleter.DeleteRecords("journal_details");
-            _dataAdder.AddObjectData("journal_details");
-        }
     }
 }
