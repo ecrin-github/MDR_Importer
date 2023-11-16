@@ -42,7 +42,8 @@ class DataTransferManager
         _studyDeleter.DeleteRecords("study_titles");
         _dataAdder.AddStudyData("study_titles");
 
-        // these are database dependent
+        // These are database dependent.
+
         if (_source.has_study_references is true)
         {
             _studyDeleter.DeleteRecords("study_references");
